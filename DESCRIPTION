@@ -1,6 +1,6 @@
 Package: JABBApkg
 Title: Just Another Bayesian Biomass Assessment
-Version: 2.0
+Version: 2.0.0
 Authors@R: 
     person(given = "Henning",
            family = "Winker",
