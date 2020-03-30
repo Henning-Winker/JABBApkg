@@ -7,6 +7,19 @@ Authors@R:
            role = c("aut", "cre")[2],
            email = "henning.winker@gmail.com")
 Description: What the package does (one paragraph).
+Depends:
+    R (>= 3.0)
+Imports:
+    gplots,
+      coda,
+      rjags,
+      R2jags,
+      snpar
+Suggests:      
+      fitdistrplus,
+      reshape,
+      mvtnorm,
+      scales
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
