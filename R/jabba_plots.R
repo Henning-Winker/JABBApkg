@@ -701,7 +701,7 @@ jbplot_trj <-  function(jabba, type = c("B","F","BBmsy","FFmsy","BB0"),output.di
     Par = list(mfrow=c(1,1),mar = c(3.5, 3.5, 0.5, 0.1), mgp =c(2.,0.5,0), tck = -0.02,cex=0.8)
     if(as.png==TRUE){png(file = paste0(output.dir,"/",type[i],"_",jabba$assessment,"_",jabba$scenario,".png"), width = width, height = height,
         res = 200, units = "in")}
-    if(add==FALSE | i ==1){par(Par)}
+    if(add==FALSE){par(Par)}
     cat(paste0("\n","><> jbplot_trj() - ", type[i]," trajectory  <><","\n"))
 
     j = which(c("B","F","BBmsy","FFmsy","BB0")%in%type[i])
