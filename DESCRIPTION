@@ -2,11 +2,17 @@ Package: JABBApkg
 Title: Just Another Bayesian Biomass Assessment
 Version: 2.0.0
 Authors@R: 
-    person(given = "Henning",
+    c(person(given = "Henning",
            family = "Winker",
-           role = c("aut", "cre")[2],
-           email = "henning.winker@gmail.com")
-Description: What the package does (one paragraph).
+           role = c("aut", "cre"),
+           email = "henning.winker@gmail.com"),
+    person(given = "Felipe",
+           family = "Carvalho",
+           role = c("aut")),
+    person(given = "Maia",
+           family = "Kapur",
+           role = c("aut")))
+Description: Bayesian State-Space Surplus Production Model to Catch and Abundance data
 Depends:
     R (>= 3.0)
 Imports:
