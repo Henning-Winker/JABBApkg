@@ -71,26 +71,26 @@ build_jabba(
 \item{Plim}{= 0, # Set Plim = Blim/K where recruitment may become impaired (e.g. Plim = 0.25)
 PRIORS}
 
-\item{r.dist}{= c("lnorm","range"),}
+\item{r.dist}{= c("lnorm","range"), # prior distribution for the intrinsic rate population increas}
 
-\item{r.prior}{= c(0.2,0.5), # mu, lod.sd}
+\item{r.prior}{= c(0.2,0.5), # prior(mu, lod.sd) for intrinsic rate of population increase}
 
-\item{K.dist}{= c("lnorm","range"), # K prior distribution}
+\item{K.dist}{= c("lnorm","range"), # prior distribution for unfished biomass  K = B0}
 
-\item{K.prior}{= NULL,}
+\item{K.prior}{= NULL, # prior(mu,CV) for the unfished biomass K = B0}
 
-\item{psi.dist}{= c("lnorm","beta"),}
+\item{psi.dist}{= c("lnorm","beta"), # prior distribution for the initial biomass depletion B[1]/K}
 
-\item{psi.prior}{= c(0.9,0.25),}
+\item{psi.prior}{= c(0.9,0.25), # prior(mu, CV) for the initial biomass depletion B[1]/K}
 
 \item{b.prior}{= c(FALSE,0.3,NA,c("bk","bbmy")[1]), # alternativ set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy"))}
 
-\item{BmsyK}{= 0.4, # Required specification for Pella-Tomlinson (model = 3 | model 4)}
+\item{BmsyK}{= 0.4, # Inflection point of the surplus production curve, requires Pella-Tomlinson (model = 3 | model 4)}
 
-\item{shape.CV}{= 0.3, # Required specification for Pella-Tomlinson (Model 4)
+\item{shape.CV}{= 0.3, # CV of the shape m parameters, if estimated with Pella-Tomlinson (Model 4)
 VARIANCE options}
 
-\item{sets.q}{= 1:(ncol(cpue)-1),}
+\item{sets.q}{= 1:(ncol(cpue)-1), # assigns catchability q to different CPUE indices. Default is each index a seperate q}
 
 \item{sigma.est}{= TRUE, # Estimate additional observation variance}
 
@@ -102,7 +102,7 @@ VARIANCE options}
 
 \item{proc.dev.all}{= TRUE, # TRUE: All year, year = starting year}
 
-\item{igamma}{= c(3,0.01), # informative mean 0.07, CV 0.4}
+\item{igamma}{= c(3,0.01), # prior for process error variance, default informative igamma ~ mean 0.07, CV 0.4}
 
 \item{projection}{= FALSE, # Switch on by Projection = TRUE}
 
