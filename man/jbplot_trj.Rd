@@ -26,6 +26,8 @@ jbplot_trj(
 
 \item{add}{if true don't call par() to allow construction of multiplots}
 
+\item{mfrow}{set up plot frame}
+
 \item{width}{plot width}
 
 \item{height}{plot hight}

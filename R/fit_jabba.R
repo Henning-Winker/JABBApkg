@@ -20,7 +20,7 @@
 #' @param peels = NULL, # retro peel option
 #' @param save.jabba = FALSE
 #' @param save.all = FALSE
-#' @output.dir = getwd()
+#' @param output.dir path to save plot. default is getwd()
 
 #' @return A result list containing estimates of model input, settings and results
 #' @export

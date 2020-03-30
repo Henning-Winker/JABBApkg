@@ -20,6 +20,8 @@ jbplot_ppdist(
 
 \item{as.png}{save as png file of TRUE}
 
+\item{mfrow}{set up plot frame}
+
 \item{width}{plot width}
 
 \item{height}{plot hight}

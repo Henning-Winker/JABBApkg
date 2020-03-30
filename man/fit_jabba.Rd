@@ -47,6 +47,8 @@ MCMC settings}
 \item{save.all}{= FALSE}
 
 \item{save.jabba}{= FALSE}
+
+\item{output.dir}{path to save plot. default is getwd()}
 }
 \value{
 A result list containing estimates of model input, settings and results

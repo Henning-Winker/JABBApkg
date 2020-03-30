@@ -69,7 +69,7 @@ jbplot_catcherror <- function(jabba,output.dir=getwd(),as.png = FALSE,add=FALSE,
 #' @param add if true don't call par() to allow construction of multiplots
 #' @param width plot width
 #' @param height plot hight
-#' @param mfrow
+#' @param mfrow set up plot frame  
 #' @export
 
 jbplot_ppdist <- function(jabba, output.dir=getwd(),as.png = FALSE,mfrow=c(round((ncol(jabba$pars_posterior))/3+0.33,0),3),width  = 8, height = 2.5*round(ncol(jabba$pars_posterior)/3,0)){
@@ -200,7 +200,7 @@ jbplot_ppdist <- function(jabba, output.dir=getwd(),as.png = FALSE,mfrow=c(round
 #' @param add if true don't call par() to allow construction of multiplots
 #' @param width plot width
 #' @param height plot hight
-#' @param mfrow
+#' @param mfrow set up plot frame  
 #' @export
 jbplot_mcmc <- function(jabba, output.dir=getwd(),as.png = FALSE,mfrow=c(round((ncol(jabba$pars_posterior))/3+0.33,0),3),width  = 8, height = 2.5*round(jabba$pars_posterior/3,0)){
 
@@ -690,7 +690,7 @@ jbplot_procdev <- function(jabba, output.dir=getwd(),as.png=FALSE,add=FALSE,widt
 #' @param output.dir directory to save plots
 #' @param as.png save as png file of TRUE
 #' @param add if true don't call par() to allow construction of multiplots
-#' @param mfrow
+#' @param mfrow set up plot frame  
 #' @param width plot width
 #' @param height plot hight
 #' @export
