@@ -313,7 +313,7 @@ build_jabba <- function(
 
   
   cat("\n","><> Model type:",model.type," <><","\n")
-  if(model<4){cat("\n","><> Shape m =",m ,"\n")} else {cat("\n","><> Shape m is estmated with a mean",m,"and a CV",shape.CY,"\n")}
+  if(model<4){cat("\n","><> Shape m =",m ,"\n")} else {cat("\n","><> Shape m is estmated with a mean",m,"and a CV",shape.CV,"\n")}
   cat("\n","><> K prior mean =",K.pr[1],"and CV =", CV.K,"(log.sd = ",K.pr[2],")","\n")
   cat("\n","><> r prior mean =",r.pr[1],"and CV =", CV.r,"(log.sd = ",r.pr[2],")","\n")
   cat("\n","><> Psi (B1/K) prior mean =",psi.prior[1],"and CV =",psi.prior[2],"with",psi.dist,"destribution","\n")
