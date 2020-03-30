@@ -128,7 +128,7 @@ build_jabba <- function(
     cpue[,2] = NA
     cpue[1,2] = 1
     SE.I = FALSE
-    add.catch.CV =FALSE
+    #add.catch.CV =FALSE
     sigma.est = FALSE
     sets.q =1
     sets.var=1

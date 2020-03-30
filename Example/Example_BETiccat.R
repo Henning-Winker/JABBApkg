@@ -40,8 +40,9 @@ jabba_plots(jabba,output.dir = output.dir)
 #----------------
 # Catch-Only
 #----------------
-jbinput = build_jabba(catch=bet$catch,model.type = "Fox",b.prior=c(0.7,0.2,2010,"bbmsy"))
+jbinput = build_jabba(catch=bet$catch,model.type = "Fox",scenario = "CatchOnly" ,b.prior=c(0.7,0.2,2010,"bbmsy"))
 jabba = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
+jbplot_catcherror(jabba)
 jbplot_trj(jabba,type="B")
 jbplot_trj(jabba,type="BBmsy")
 jbplot_bprior(jabba)
