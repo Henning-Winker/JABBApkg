@@ -312,8 +312,6 @@ fit_jabba = function(jbinput,
   jabba$kobe = data.frame(factor=assessment,level=scenario,yr=years[N],stock=posteriors$BtoBmsy[,N],harvest=posteriors$HtoHmsy[,N])
 
 
-  cat(paste0("\n","\n",paste0("><> TEST1  <><","\n")))
-
   if(save.jabba==TRUE){
   save(jabba,file=paste0(output.dir,"/",assessment,"_",settings$scenario,"_jabba.rdata"))
   }

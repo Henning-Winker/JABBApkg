@@ -24,12 +24,12 @@ build_jabba(
   BmsyK = 0.4,
   shape.CV = 0.3,
   sets.q = 1:(ncol(cpue) - 1),
-  sigma.est = FALSE,
+  sigma.est = TRUE,
   sets.var = 1:(ncol(cpue) - 1),
-  fixed.obsE = c(0.01),
+  fixed.obsE = ifelse(is.null(se), 0.05, 0.2),
   sigma.proc = TRUE,
   proc.dev.all = TRUE,
-  igamma = c(0.3, 0.01),
+  igamma = c(3, 0.01),
   projection = FALSE,
   TACs = NULL,
   TACint = NULL,
@@ -92,7 +92,7 @@ VARIANCE options}
 
 \item{sets.q}{= 1:(ncol(cpue)-1),}
 
-\item{sigma.est}{= FALSE, # Estimate additional observation variance}
+\item{sigma.est}{= TRUE, # Estimate additional observation variance}
 
 \item{sets.var}{= 1:(ncol(cpue)-1), # estimate individual additional variace}
 
@@ -102,7 +102,7 @@ VARIANCE options}
 
 \item{proc.dev.all}{= TRUE, # TRUE: All year, year = starting year}
 
-\item{igamma}{= c(0.3,0.01), # informative mean 0.07, CV 0.4}
+\item{igamma}{= c(3,0.01), # informative mean 0.07, CV 0.4}
 
 \item{projection}{= FALSE, # Switch on by Projection = TRUE}
 

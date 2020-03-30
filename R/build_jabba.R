@@ -21,9 +21,9 @@
 #' @param BmsyK = 0.4, # Required specification for Pella-Tomlinson (model = 3 | model 4)
 #' @param shape.CV = 0.3, # Required specification for Pella-Tomlinson (Model 4)
 #' VARIANCE options
-#' @param igamma = c(0.3,0.01), # informative mean 0.07, CV 0.4
+#' @param igamma = c(3,0.01), # informative mean 0.07, CV 0.4
 #' @param sets.q = 1:(ncol(cpue)-1),
-#' @param sigma.est = FALSE, # Estimate additional observation variance
+#' @param sigma.est = TRUE, # Estimate additional observation variance
 #' @param sets.var = 1:(ncol(cpue)-1), # estimate individual additional variace
 #' @param fixed.obsE = c(0.01), # Minimum fixed observation erro
 #' @param sigma.proc =  TRUE, # TRUE: Estimate observation error, else set to value
@@ -70,12 +70,12 @@ build_jabba <- function(
   BmsyK = 0.4, # Required specification for Pella-Tomlinson (model = 3 | model 4)
   shape.CV = 0.3, # Required specification for Pella-Tomlinson (Model 4)
   sets.q = 1:(ncol(cpue)-1),
-  sigma.est = FALSE, # Estimate additional observation variance
+  sigma.est = TRUE, # Estimate additional observation variance
   sets.var = 1:(ncol(cpue)-1), # estimate individual additional variace
-  fixed.obsE = c(0.01), # Minimum fixed observation erro
+  fixed.obsE = ifelse(is.null(se),0.05,0.2), # Minimum fixed observation erro
   sigma.proc =  TRUE, # TRUE: Estimate observation error, else set to value
   proc.dev.all = TRUE, # TRUE: All year, year = starting year
-  igamma = c(0.3,0.01), # informative mean 0.07, CV 0.4
+  igamma = c(3,0.01), # informative mean 0.07, CV 0.4
   projection = FALSE, # Switch on by Projection = TRUE
   TACs = NULL,
   TACint =  NULL, # default avg last 3 years
@@ -269,7 +269,7 @@ build_jabba <- function(
   #----------------------------------------------------
   # Prepare K prior
   #----------------------------------------------------
-  if(is.null(K.prior)) K.prior = c(4*max(Catch),1) # mean and CV
+  if(is.null(K.prior)) K.prior = c(8*max(Catch),1) # mean and CV
   if(length(K.prior)<2) K.prior[2] = 1
 
 
@@ -311,10 +311,19 @@ build_jabba <- function(
   Priors = data.frame(Priors)
   Priors$log.sd = sqrt(log(Priors[,2]^2+1))
 
+  
+  cat("\n","><> Model type:",model.type," <><","\n")
+  if(model<4){cat("\n","><> Shape m =",m ,"\n")} else {cat("\n","><> Shape m is estmated with a mean",m,"and a CV",shape.CY,"\n")}
+  cat("\n","><> K prior mean =",K.pr[1],"and CV =", CV.K,"(log.sd = ",K.pr[2],")","\n")
+  cat("\n","><> r prior mean =",r.pr[1],"and CV =", CV.r,"(log.sd = ",r.pr[2],")","\n")
+  cat("\n","><> Psi (B1/K) prior mean =",psi.prior[1],"and CV =",psi.prior[2],"with",psi.dist,"destribution","\n")
+  
+  
+  
   #----------------------------------------------------------
   # Set up JABBA
   #----------------------------------------------------------
-  cat("\n","><> Set up JAGS input data structure <><","\n")
+  cat("\n","\n","\n","><> ALWAYS ENSURE to adjust default settings to your specific stock <><","\n","\n")
   # Plot MSY
   # remove scientific numbers
   options(scipen=999)
