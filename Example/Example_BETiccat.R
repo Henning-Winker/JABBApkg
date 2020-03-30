@@ -1,5 +1,4 @@
 library(JABBApkg)
-jabba_libs() # install packages if missing
 assessment = "BETiccat"
 scenario = "S1"
 setwd("C:/Work/Research/GitHub/JABBApkg_testing/example")
