@@ -11,18 +11,18 @@
 #' @param catch.cv  catch error on log-scale (default = 0.1)
 #' @param Plim = 0, # Set Plim = Blim/K where recruitment may become impaired (e.g. Plim = 0.25)
 #' PRIORS
-#' @param r.dist = c("lnorm","range"),
-#' @param r.prior = c(0.2,0.5), # mu, lod.sd
-#' @param K.dist = c("lnorm","range"), # K prior distribution
-#' @param K.prior = NULL,
-#' @param psi.dist = c("lnorm","beta"),
-#' @param psi.prior = c(0.9,0.25),
+#' @param r.dist = c("lnorm","range"), # prior distribution for the intrinsic rate population increas 
+#' @param r.prior = c(0.2,0.5), # prior(mu, lod.sd) for intrinsic rate of population increase   
+#' @param K.dist = c("lnorm","range"), # prior distribution for unfished biomass  K = B0 
+#' @param K.prior = NULL, # prior(mu,CV) for the unfished biomass K = B0
+#' @param psi.dist = c("lnorm","beta"), # prior distribution for the initial biomass depletion B[1]/K
+#' @param psi.prior = c(0.9,0.25), # prior(mu, CV) for the initial biomass depletion B[1]/K
 #' @param b.prior = c(FALSE,0.3,NA,c("bk","bbmy")[1]), # alternativ set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy"))
-#' @param BmsyK = 0.4, # Required specification for Pella-Tomlinson (model = 3 | model 4)
-#' @param shape.CV = 0.3, # Required specification for Pella-Tomlinson (Model 4)
+#' @param BmsyK = 0.4, # Inflection point of the surplus production curve, requires Pella-Tomlinson (model = 3 | model 4)
+#' @param shape.CV = 0.3, # CV of the shape m parameters, if estimated with Pella-Tomlinson (Model 4)
 #' VARIANCE options
-#' @param igamma = c(3,0.01), # informative mean 0.07, CV 0.4
-#' @param sets.q = 1:(ncol(cpue)-1),
+#' @param igamma = c(3,0.01), # prior for process error variance, default informative igamma ~ mean 0.07, CV 0.4
+#' @param sets.q = 1:(ncol(cpue)-1), # assigns catchability q to different CPUE indices. Default is each index a seperate q
 #' @param sigma.est = TRUE, # Estimate additional observation variance
 #' @param sets.var = 1:(ncol(cpue)-1), # estimate individual additional variace
 #' @param fixed.obsE = c(0.01), # Minimum fixed observation erro
@@ -58,18 +58,18 @@ build_jabba <- function(
   scenario = "s1",
   model.type = c("Schaefer","Fox","Pella","Pella_m"),
   add.catch.CV = TRUE, # to match original assessment
-  catch.cv = 0.1,
+  catch.cv = 0.1, # CV for catch error
   Plim = 0, # Set Plim = Blim/K where recruitment may become impaired (e.g. Plim = 0.25)
-  r.dist = c("lnorm","range"),
-  r.prior = c(0.2,0.5), # mu, lod.sd
-  K.dist = c("lnorm","range"), # K prior distribution
-  K.prior = NULL,
-  psi.dist = c("lnorm","beta"),
-  psi.prior = c(0.9,0.25),
+  r.dist = c("lnorm","range"), # prior distribution for the intrinsic rate population increas 
+  r.prior = c(0.2,0.5), # prior(mu, lod.sd) for intrinsic rate of population increase   
+  K.dist = c("lnorm","range"), # prior distribution for unfished biomass  K = B0 
+  K.prior = NULL, # prior(mu,CV) for the unfished biomass K = B0
+  psi.dist = c("lnorm","beta"), # prior distribution for the initial biomass depletion B[1]/K
+  psi.prior = c(0.9,0.25), # prior(mu, CV) for the initial biomass depletion B[1]/K
   b.prior = c(FALSE,0.3,NA,c("bk","bbmy")[1]), # alternativ set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy"))
-  BmsyK = 0.4, # Required specification for Pella-Tomlinson (model = 3 | model 4)
-  shape.CV = 0.3, # Required specification for Pella-Tomlinson (Model 4)
-  sets.q = 1:(ncol(cpue)-1),
+  BmsyK = 0.4, # Inflection point of the surplus production curve, requires Pella-Tomlinson (model = 3 | model 4)
+  shape.CV = 0.3, # CV of the shape m parameters, if estimated with Pella-Tomlinson (Model 4)
+  sets.q = 1:(ncol(cpue)-1), # assigns catchability q to different CPUE indices. Default is each index a seperate q
   sigma.est = TRUE, # Estimate additional observation variance
   sets.var = 1:(ncol(cpue)-1), # estimate individual additional variace
   fixed.obsE = ifelse(is.null(se),0.05,0.2), # Minimum fixed observation erro
@@ -77,7 +77,7 @@ build_jabba <- function(
   proc.dev.all = TRUE, # TRUE: All year, year = starting year
   igamma = c(3,0.01), # informative mean 0.07, CV 0.4
   projection = FALSE, # Switch on by Projection = TRUE
-  TACs = NULL,
+  TACs = NULL, # vector of fixed catches used for projections  
   TACint =  NULL, # default avg last 3 years
   imp.yr = NULL, # default last year plus ONE
   pyrs = NULL, # Set number of projections years
