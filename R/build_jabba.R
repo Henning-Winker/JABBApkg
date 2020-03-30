@@ -193,18 +193,18 @@ build_jabba <- function(
 
 
   # Add depletion prior
-  if(b.prior[1]==FALSE){
+  if((b.prior[1])==FALSE){
     b.yr = rep(0,n.years) # activate by setting one year to one
-    b.pr = c(0.5,0.1) # not active
+    b.pr = c(0.5,0.1,0,0) # not active
   } else {
     b.yr = rep(0,n.years)
-    if(length(b.prior)>2 & b.prior[3] %in% years){
-      b.pr = b.prior[1:2]
+    if(as.numeric(b.prior[3]) %in% years){
+      b.pr = as.numeric(c(b.prior[1:2],years[which(years %in% b.prior[3])],ifelse(b.prior[4]=="bk",0,1)))
       b.yr[which(years %in% b.prior[3])] =1
+    
     } else {
       b.yr[n.years] = 1
-      b.pr = b.prior[1:2]
-
+      b.pr = as.numeric(c(b.prior[1:2],years[n.years],ifelse(b.prior[4]=="bk",0,1)))
     }}
 
 

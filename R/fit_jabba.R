@@ -310,8 +310,14 @@ fit_jabba = function(jbinput,
   jabba$stats = data.frame(Stastistic = c("N","p","DF","SDNR","RMSE","DIC"),Value = c(Nobs,npar,DF,SDNR,RMSE,DIC))
   jabba$pars_posterior = out
   jabba$kobe = data.frame(factor=assessment,level=scenario,yr=years[N],stock=posteriors$BtoBmsy[,N],harvest=posteriors$HtoHmsy[,N])
-
-
+  # add b.ppdist
+  if(jbinput$jagsdata$b.pr[3]==0){jabba$bppd = "No biomass prior used"} else {
+  if(jbinput$jagsdata$b.pr[4]==0){
+    jabba$bppd = posteriors$P[,which(years%in%jbinput$jagsdata$b.pr[3])]} else {
+    jabba$bppd = posteriors$BtoBmsy[,which(years%in%jbinput$jagsdata$b.pr[3])]}
+  }  
+  
+  
   if(save.jabba==TRUE){
   save(jabba,file=paste0(output.dir,"/",assessment,"_",settings$scenario,"_jabba.rdata"))
   }

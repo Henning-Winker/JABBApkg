@@ -996,9 +996,46 @@ jbplot_biplot <-  function(jabba ,output.dir=getwd(),as.png=FALSE,add=FALSE,widt
 
 } # End of biplot function
 
-#-------------------------
-# wrapper plot function
-#------------------------
+#' Plot of biomass depletion prior vs posterios
+#'
+#' prior is specified as b/k or b/bmsy in build_jabba()
+#'
+#' @param jabba output list from fit_jabba
+#' @param output.dir directory to save plots
+#' @param as.png save as png file of TRUE
+#' @param add if true don't call par() to allow construction of multiplots
+#' @param width plot width
+#' @param height plot hight
+#' @export
+jbplot_bprior <- function(jabba, output.dir=getwd(),as.png=FALSE,add=FALSE,width = 5, height = 3.5){
+  if(jabba$settings$b.pr[3]==0){
+    cat(paste0("\n","><> No additional biomass depletion prior specified  <><","\n"))
+  } else {
+  cat(paste0("\n","><> jbplot_bprior - biomass depletion prior vs posterior   <><","\n"))
+  Par = list(mfrow=c(1,1),mar = c(3.5, 3.5, 0.1, 0.1), mgp =c(2.,0.5,0), tck = -0.02,cex=0.8)
+  if(as.png==TRUE){png(file = paste0(output.dir,"/Bprior_",jabba$assessment,"_",jabba$scenario,".png"), width = width, height = height,
+                       res = 200, units = "in")}
+  if(add==FALSE) par(Par)
+  
+  xlabs = c(expression(B/K),expression(B/B[MSY])) 
+  bpr =  rlnorm(10000,log(jabba$settings$b.pr[1]),jabba$settings$b.pr[2])
+  pdf = stats::density(jabba$bppd,adjust=2)
+  prior = dlnorm(sort(bpr),log(jabba$settings$b.pr[1]),jabba$settings$b.pr[2])
+  plot(pdf,type="l",ylim=c(0,max(prior,pdf$y)*1.1),xlim=range(c(pdf$x,quantile(bpr,c(0.0001,0.95)))),yaxt="n",xlab=xlabs[ifelse(jabba$settings$b.pr[4]==0,1,2)],ylab="Density",xaxs="i",yaxs="i",main="")
+
+ polygon(c(sort(bpr),rev(sort(bpr))),c(prior,rep(0,length(sort(bpr)))),col=gray(0.4,1))
+ polygon(c(pdf$x,rev(pdf$x)),c(pdf$y,rep(0,length(pdf$y))),col=gray(0.7,0.7))
+ legend('right',c("Prior","Posterior"),pch=22,pt.cex=1.5,pt.bg = c(grey(0.4,1),grey(0.8,0.6)),bty="n")
+ PPVR = round((sd(jabba$bppd)/mean(jabba$bppd))^2/(sd(bpr)/mean(bpr))^2,3)
+ PPVM = round(mean(jabba$bppd)/mean(bpr),3)
+ legend("topright",c(paste("PPMR =",PPVM),paste("PPVR =",PPVR)),cex=1,bty="n")
+ legend("top",c(paste(round(jabba$settings$b.pr[3],0))),cex=1.2,bty="n",y.intersp = -0.2)
+ if(as.png==TRUE){dev.off()}
+  }
+} # end of biomass prior plotting function 
+
+
+
 #' wrapper jbplot function
 #'
 #' plots all routine JABBA plot to output.dir if as.png=TRUE (default)
