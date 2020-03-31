@@ -1017,11 +1017,11 @@ jbplot_bprior <- function(jabba, output.dir=getwd(),as.png=FALSE,add=FALSE,width
                        res = 200, units = "in")}
   if(add==FALSE) par(Par)
   
-  xlabs = c(expression(B/K),expression(B/B[MSY])) 
+  xlabs = c(expression(B/K),expression(B/B[MSY]),expression(F/F[MSY])) 
   bpr =  rlnorm(10000,log(jabba$settings$b.pr[1]),jabba$settings$b.pr[2])
   pdf = stats::density(jabba$bppd,adjust=2)
   prior = dlnorm(sort(bpr),log(jabba$settings$b.pr[1]),jabba$settings$b.pr[2])
-  plot(pdf,type="l",ylim=c(0,max(prior,pdf$y)*1.1),xlim=range(c(pdf$x,quantile(bpr,c(0.0001,0.95)))),yaxt="n",xlab=xlabs[ifelse(jabba$settings$b.pr[4]==0,1,2)],ylab="Density",xaxs="i",yaxs="i",main="")
+  plot(pdf,type="l",ylim=c(0,max(prior,pdf$y)*1.1),xlim=range(c(pdf$x,quantile(bpr,c(0.0001,0.95)))),yaxt="n",xlab=xlabs[jabba$settings$b.pr[4]+1],ylab="Density",xaxs="i",yaxs="i",main="")
 
  polygon(c(sort(bpr),rev(sort(bpr))),c(prior,rep(0,length(sort(bpr)))),col=gray(0.4,1))
  polygon(c(pdf$x,rev(pdf$x)),c(pdf$y,rep(0,length(pdf$y))),col=gray(0.7,0.7))

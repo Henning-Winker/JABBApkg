@@ -17,7 +17,7 @@
 #' @param K.prior = NULL, # prior(mu,CV) for the unfished biomass K = B0
 #' @param psi.dist = c("lnorm","beta"), # prior distribution for the initial biomass depletion B[1]/K
 #' @param psi.prior = c(0.9,0.25), # prior(mu, CV) for the initial biomass depletion B[1]/K
-#' @param b.prior = c(FALSE,0.3,NA,c("bk","bbmy")[1]), # alternativ set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy"))
+#' @param b.prior = c(FALSE,0.3,NA,c("bk","bbmy","ffmsy")[1]), # depletion prior set as d.prior = c(mean,cv,yr,type=c("bk","bbmsy"))
 #' @param BmsyK = 0.4, # Inflection point of the surplus production curve, requires Pella-Tomlinson (model = 3 | model 4)
 #' @param shape.CV = 0.3, # CV of the shape m parameters, if estimated with Pella-Tomlinson (Model 4)
 #' VARIANCE options
@@ -65,8 +65,8 @@ build_jabba <- function(
   K.dist = c("lnorm","range"), # prior distribution for unfished biomass  K = B0 
   K.prior = NULL, # prior(mu,CV) for the unfished biomass K = B0
   psi.dist = c("lnorm","beta"), # prior distribution for the initial biomass depletion B[1]/K
-  psi.prior = c(0.9,0.25), # prior(mu, CV) for the initial biomass depletion B[1]/K
-  b.prior = c(FALSE,0.3,NA,c("bk","bbmy")[1]), # alternativ set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy"))
+  psi.prior = c(0.9,0.25), # depletionprior(mu, CV) for the initial biomass depletion B[1]/K
+  b.prior = c(FALSE,0.3,NA,c("bk","bbmsy","ffmsy")[1]), # depletion prior set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy","ffmsy))
   BmsyK = 0.4, # Inflection point of the surplus production curve, requires Pella-Tomlinson (model = 3 | model 4)
   shape.CV = 0.3, # CV of the shape m parameters, if estimated with Pella-Tomlinson (Model 4)
   sets.q = 1:(ncol(cpue)-1), # assigns catchability q to different CPUE indices. Default is each index a seperate q
@@ -199,12 +199,12 @@ build_jabba <- function(
   } else {
     b.yr = rep(0,n.years)
     if(as.numeric(b.prior[3]) %in% years){
-      b.pr = as.numeric(c(b.prior[1:2],years[which(years %in% b.prior[3])],ifelse(b.prior[4]=="bk",0,1)))
+      b.pr = as.numeric(c(b.prior[1:2],years[which(years %in% b.prior[3])],which(c("bk","bbmsy","ffmsy")%in%b.prior[4])-1))
       b.yr[which(years %in% b.prior[3])] =1
     
     } else {
       b.yr[n.years] = 1
-      b.pr = as.numeric(c(b.prior[1:2],years[n.years],ifelse(b.prior[4]=="bk",0,1)))
+      b.pr = as.numeric(c(b.prior[1:2],years[n.years],which(c("bk","bbmsy","ffmsy")%in%b.prior[4])-1))
     }}
 
 

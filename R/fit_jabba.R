@@ -283,8 +283,7 @@ fit_jabba = function(jbinput,
   jabba$estimates=Table
   jabba$yr = years
   jabba$catch = settings$TC
-  cat(paste0("\n","\n",paste0("><> Scenario ", jbinput$settings$scenario,"_",jbinput$settings$model.type," completed in ",as.integer(save.time[3]/60)," min and ",round((save.time[3]/60-as.integer(save.time[3]/60))*100)," sec <><","\n")))
-
+  
   if(settings$add.catch.CV ==TRUE){jabba$est.catch = data.frame(yr=years,mu=apply(posteriors$estC,2,quantile,c(0.5,0.025,0.975))[1,],
                                                                 lci=apply(posteriors$estC,2,quantile,c(0.5,0.025,0.975))[2,],
                                                                 uci=apply(posteriors$estC,2,quantile,c(0.5,0.025,0.975))[3,])} else {
@@ -312,9 +311,9 @@ fit_jabba = function(jbinput,
   jabba$kobe = data.frame(factor=assessment,level=scenario,yr=years[N],stock=posteriors$BtoBmsy[,N],harvest=posteriors$HtoHmsy[,N])
   # add b.ppdist
   if(jbinput$jagsdata$b.pr[3]==0){jabba$bppd = "No biomass prior used"} else {
-  if(jbinput$jagsdata$b.pr[4]==0){
-    jabba$bppd = posteriors$P[,which(years%in%jbinput$jagsdata$b.pr[3])]} else {
-    jabba$bppd = posteriors$BtoBmsy[,which(years%in%jbinput$jagsdata$b.pr[3])]}
+  if(jbinput$jagsdata$b.pr[4]==0){jabba$bppd = posteriors$P[,which(years%in%jbinput$jagsdata$b.pr[3])]} 
+  if(jbinput$jagsdata$b.pr[4]==1){jabba$bppd = posteriors$BtoBmsy[,which(years%in%jbinput$jagsdata$b.pr[3])]}
+  if(jbinput$jagsdata$b.pr[4]==2){jabba$bppd = posteriors$HtoHmsy[,which(years%in%jbinput$jagsdata$b.pr[3])]}
   }  
   
   

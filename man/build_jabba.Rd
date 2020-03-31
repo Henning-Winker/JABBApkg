@@ -20,7 +20,7 @@ build_jabba(
   K.prior = NULL,
   psi.dist = c("lnorm", "beta"),
   psi.prior = c(0.9, 0.25),
-  b.prior = c(FALSE, 0.3, NA, c("bk", "bbmy")[1]),
+  b.prior = c(FALSE, 0.3, NA, c("bk", "bbmsy", "ffmsy")[1]),
   BmsyK = 0.4,
   shape.CV = 0.3,
   sets.q = 1:(ncol(cpue) - 1),
@@ -83,7 +83,7 @@ PRIORS}
 
 \item{psi.prior}{= c(0.9,0.25), # prior(mu, CV) for the initial biomass depletion B[1]/K}
 
-\item{b.prior}{= c(FALSE,0.3,NA,c("bk","bbmy")[1]), # alternativ set as b.prior = c(mean,cv,yr,type=c("bk","bbmsy"))}
+\item{b.prior}{= c(FALSE,0.3,NA,c("bk","bbmy","ffmsy")[1]), # depletion prior set as d.prior = c(mean,cv,yr,type=c("bk","bbmsy"))}
 
 \item{BmsyK}{= 0.4, # Inflection point of the surplus production curve, requires Pella-Tomlinson (model = 3 | model 4)}
 
