@@ -14,19 +14,19 @@ Authors@R:
            role = c("aut")))
 Description: Bayesian State-Space Surplus Production Model to Catch and Abundance data
 Depends:
-    R (>= 3.0)
+    R (>= 3.5)
 Imports:
-    gplots,
+      gplots,
       coda,
       rjags,
       R2jags,
-      snpar
+      snpar,
+      reshape
 Suggests:      
       fitdistrplus,
-      reshape,
       mvtnorm,
       scales
-License: What license it uses
+License: EUPL
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0

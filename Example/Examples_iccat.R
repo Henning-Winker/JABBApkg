@@ -50,6 +50,19 @@ jbplot_kobe(bet1)
 # Write all as png
 jabba_plots(jabba=bet1,output.dir = output.dir)
 
+
+# Run with projections
+jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "FitCPUE",model.type = "Fox",sigma.est = FALSE,fixed.obsE = 0.01,
+                      projection=TRUE,TACs=seq(45000,90000,5000))
+
+betprj = fit_jabba(jbinput,output.dir=output.dir,save.csvs = T)
+# plot with CIs (80% for projections)
+jbplot_prj(betprj,type="BBmsy")
+jbplot_prj(betprj,type="BB0")
+
+# or without CIs (80% for projections) 
+jbplot_prj(betprj,type="FFmsy", CIs=FALSE)
+
 #------------------------------------------------------
 # Estimate shape m as function of Bmsy/K
 #-------------------------------------------------------

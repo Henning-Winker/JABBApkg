@@ -115,9 +115,9 @@ kobeJabba<-function(x){
 #' Function to convert kobe projection matrix posteriors into Kobe FLR input object
 #' @param x posterior array dims(iter,year,tac,stock,harvest)
 #' @export
-kobeJabbaProj<-function(xtac=NULL){
+kobeJabbaProj<-function(x){
 
-  out=cbind(reshape::meltmelt(x[,,,2]),c(x[,,,3]))
+  out=cbind(reshape::melt(x[,,,2]),c(x[,,,3]))
   names(out)=c("iter","year","tac","stock","harvest")
   out$year=out$year
 
@@ -154,5 +154,4 @@ runs_sig3 <- function(x,type=NULL) {
 
   return(list(sig3lim=c(lcl,ucl),p.runs= pvalue))
 }
-
 

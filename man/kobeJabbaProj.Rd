@@ -4,7 +4,7 @@
 \alias{kobeJabbaProj}
 \title{Function to convert JABBA projections into  FLR object}
 \usage{
-kobeJabbaProj(xtac = NULL)
+kobeJabbaProj(x)
 }
 \arguments{
 \item{x}{posterior array dims(iter,year,tac,stock,harvest)}

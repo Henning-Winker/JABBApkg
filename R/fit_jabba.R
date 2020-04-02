@@ -14,9 +14,9 @@
 #' @param nc number of mcmc chains
 #' @param nc number of mcmc chains
 #' @param init.values = FALSE,
-#' @param  K.init = NULL,
-#' @param r.init = NULL,
-#' @param q.init = NULL,# vector
+#' @param init.K = NULL,
+#' @param init.r = NULL,
+#' @param init.q = NULL,# vector
 #' @param peels = NULL, # retro peel option
 #' @param save.jabba = FALSE
 #' @param save.all = FALSE
@@ -36,14 +36,14 @@ fit_jabba = function(jbinput,
                      nc = 2, # number of chains
                      # init values
                      init.values = FALSE,
-                     K.init = NULL,
-                     r.init = NULL,
-                     q.init = NULL,# vector
+                     init.K = NULL,
+                     init.r = NULL,
+                     init.q = NULL,# vector
                      peels = NULL, # retro peel option
                      save.all = FALSE,
                      save.jabba = FALSE,
                      save.csvs = FALSE,
-                     save.projections = NULL,
+                     save.prjkobe = FALSE,
                      output.dir = getwd()
 ){
   # mcmc saved
@@ -60,9 +60,9 @@ fit_jabba = function(jbinput,
       stop("\n","\n","><> Provide init.r guess for option init.values=TRUE  <><","\n","\n")
     if(is.null(init.q))
       stop("\n","\n","><> Provide init.q vector guess for option init.values=TRUE  <><","\n","\n")
-    if(length(init.q)!=nq)
+    if(length(init.q)!= jbinput$jagsdata$nq)
       stop("\n","\n","><> init.q vector must match length of estimable q's, length(unique(sets.q))   <><","\n","\n")
-    inits = function(){ list(K= init.K,r=init.r,q = init.q, isigma2.est=runif(1,20,100), itau2=runif(nvar,80,200))}
+    inits = function(){ list(K= init.K,r=init.r,q = init.q, isigma2.est=runif(1,20,100), itau2=runif(jbd$nvar,80,200))}
   }
 
   out = output.dir
@@ -150,9 +150,6 @@ fit_jabba = function(jbinput,
   # Save parameters, results table and current status posterior in csv files
   #-------------------------------------------------------------------------
 
-  # Safe posteriors (Produces large object!)
-  if(save.all==TRUE) save(posteriors,file=paste0(output.dir,"/",assessment,"_",settings$scenario,"_posteriors.rdata"))
-
   # Make standard results table with parameter estimates and reference points
   Table = rbind(data.frame(results)[c("K","r","psi","sigma2","m"),1:3],data.frame(ref.points))
   Table[4,] = round(sqrt((Table[4,])),3)
@@ -177,7 +174,42 @@ fit_jabba = function(jbinput,
 
   }
 
-
+  #--------------------------------------------------------
+  # Projections
+  #-------------------------------------------------------
+  
+  if(jbinput$settings$projection==TRUE){
+    cat("\n","><> compiling Future Projections under fixed quota <><","\n")
+    pyrs = jbinput$jagsdata$pyrs
+    TACs = jbinput$jagsdata$TAC[1,] 
+    nTAC = length(TACs) 
+    proj.yrs =  years[n.years]:(years[n.years]+pyrs)
+    # Dims 1: saved MCMC,2: Years, 3:alternatic TACs, 4: P, H/Hmsy, B/Bmsy
+    projections = array(NA,c(nsaved,length(proj.yrs),nTAC,3),dimnames = list(1:nsaved,proj.yrs,TACs,c("BB0","BBmsy","FFmsy")))
+    
+    for(i in 1:nTAC){
+      projections[,,i,1] = cbind(posteriors$P[,(n.years):n.years],posteriors$prP[,,i])
+    }
+    
+    for(i in 1:nTAC){
+      projections[,,i,2] = cbind(posteriors$BtoBmsy[,(n.years):n.years],posteriors$prBtoBmsy[,,i])
+    }
+    for(i in 1:nTAC){
+      projections[,,i,3] = cbind(posteriors$HtoHmsy[,(n.years):n.years],posteriors$prHtoHmsy[,,i])
+    }
+    
+    
+    Stock_prj = array(data=NA,dim=c(pyrs+1,3,length(TACs),3),dimnames = list(proj.yrs,c("mu","lci","uci"),TACs,c("BB0","BBmsy","FFmsy")))
+    for(j in 1:length(TACs)){
+      for(i in 1:3){
+        Stock_prj[,i,j,] =  cbind(t(apply(projections[,,j,"BB0"],2,quantile,c(0.5,0.1,0.9)))[,i],
+                                  t(apply(projections[,,j,"BBmsy"],2,quantile,c(0.5,0.1,0.95)))[,i],
+                                  t(apply(projections[,,j,"FFmsy"],2,quantile,c(0.5,0.1,0.95)))[,i])
+        
+      }}
+    
+    
+  }
   #------------------------
   # Production function
   #------------------------
@@ -315,12 +347,33 @@ fit_jabba = function(jbinput,
   if(jbinput$jagsdata$b.pr[4]==1){jabba$bppd = posteriors$BtoBmsy[,which(years%in%jbinput$jagsdata$b.pr[3])]}
   if(jbinput$jagsdata$b.pr[4]==2){jabba$bppd = posteriors$HtoHmsy[,which(years%in%jbinput$jagsdata$b.pr[3])]}
   }  
-  
+  if(jbinput$settings$projection==FALSE){ jabba$projections = "Required setting projection = TRUE in build_jabba()" } else{
+    jabba$projections = Stock_prj
+  }
   
   if(save.jabba==TRUE){
-  save(jabba,file=paste0(output.dir,"/",assessment,"_",settings$scenario,"_jabba.rdata"))
+  save(jabba,file=paste0(output.dir,"/",settings$assessment,"_",settings$scenario,"_jabba.rdata"))
   }
-
+  
+  if(save.prjkobe==TRUE){
+    prjkb = kobeJabbaProj(projections)
+    save(prjkb,file=paste0(output.dir,"/",settings$assessment,"_",settings$scenario,"_prjkb.rdata"))
+  }
+  
+  
+  # Safe posteriors (Produces large object!)
+  if(save.all==TRUE) save(posteriors,file=paste0(output.dir,"/",settings$assessment,"_",settings$scenario,"_posteriors.rdata"))
+  
+  
+  if(save.csvs==TRUE){
+    # Save results
+    write.csv(Stock_trj[,2,],paste0(output.dir,"/Stock_trj_",settings$assessment,"_",settings$scenario,".csv"))
+    # Save model estimates and convergence p-values
+    write.csv(data.frame(results),paste0(output.dir,"/Estimates_",settings$assessment,"_",settings$scenario,".csv"))
+    write.csv(Table,paste0(output.dir,"/Results_",settings$assessment,"_",settings$scenario,".csv"))
+    write.csv(jabba$stats,paste0(output.dir,"/GoodnessFit_",settings$assessment,"_",settings$scenario,".csv"))
+  }
+  
 
 
   return(jabba)

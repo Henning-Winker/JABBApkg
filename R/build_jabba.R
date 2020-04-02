@@ -41,21 +41,17 @@
 #' @param KOBE.plot = TRUE, # Produces JABBA Kobe plot
 #' @param KOBE.type = c("ICCAT","IOTC")[2], # ICCAT uses 3 colors; IOTC 4 (incl. orange)
 #' @param Biplot= FALSE, # Produces a "post-modern" biplot with buffer and target zones (Quinn & Collie 2005)
-#' @param save.trajectories =FALSE, # saves posteriors of P=B/K, B/Bmsy and H/Hmsy as .RData object
 #' @param harvest.label = c("Hmsy","Fmsy")[2], # choose label preference H/Hmsy versus Fmsy
-#' @param CPUE.plot= TRUE, # Runs state-tool to produce "alligned" multi-CPUE plot
-#' @param meanCPUE = FALSE, # Uses averaged CPUE from state-space tool instead of individual indices
-#' @param save.projections = FALSE, # saves projection posteriors as .RData object
-#' @param catch.metric = "(t)" # Define cat
+#' @param catch.metric  "(t)" # Define catch input metric e.g. (tons) "000 t" 
 #' @return List to be used as data input to JABBA JAGS model.
 #' @export
 
 build_jabba <- function(
-  catch = NULL,
-  cpue = NULL,
-  se =  NULL,
-  assessment = "example",
-  scenario = "s1",
+  catch = iccat$bet$catch,
+  cpue = iccat$bet$cpue,
+  se =  iccat$bet$se,
+  assessment = "bet_example",
+  scenario = "test",
   model.type = c("Schaefer","Fox","Pella","Pella_m"),
   add.catch.CV = TRUE, # to match original assessment
   catch.cv = 0.1, # CV for catch error
@@ -91,11 +87,7 @@ build_jabba <- function(
   KOBE.plot = TRUE, # Produces JABBA Kobe plot
   KOBE.type = c("ICCAT","IOTC")[2], # ICCAT uses 3 colors; IOTC 4 (incl. orange)
   Biplot= FALSE, # Produces a "post-modern" biplot with buffer and target zones (Quinn & Collie 2005)
-  save.trajectories =FALSE, # saves posteriors of P=B/K, B/Bmsy and H/Hmsy as .RData object
   harvest.label = c("Hmsy","Fmsy")[2], # choose label preference H/Hmsy versus Fmsy
-  CPUE.plot= TRUE, # Runs state-tool to produce "alligned" multi-CPUE plot
-  meanCPUE = FALSE, # Uses averaged CPUE from state-space tool instead of individual indices
-  save.projections = FALSE, # saves projection posteriors as .RData object
   catch.metric = "(t)" # Define catch input metric e.g. (tons) "000 t" etc
 ){
 
@@ -331,7 +323,7 @@ build_jabba <- function(
   #----------------------------------------------------------
   # Setup TAC projection
   #---------------------------------------------------------
-  if(is.null(TACs)) TACs = seq(0.5,1.3,0.1)*TC[n.years]
+  if(is.null(TACs)) TACs = round(seq(0.5,1.2,0.1)*TC[n.years],0)
   if(is.null(TACint)) TACint =  mean(c(TC[length(TC)-1],TC[length(TC)])) # avg last 3 years
   # default avg last 3 years
   if(is.null(imp.yr))imp.yr = years[n.years]+1 # default last year plus ONE

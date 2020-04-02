@@ -728,6 +728,63 @@ jbplot_trj <-  function(jabba, type = c("B","F","BBmsy","FFmsy","BB0"),output.di
 
     }} # end of plot function
 
+
+#' Projection plot
+#'
+#' plots choice of projections of B/Bmsy, F/Fmsy or B/B0 over fixed quotas set up in build_jabba()
+#'
+#' @param jabba output list from fit_jabba
+#' @param type Options are c("BBmsy","FFmsy","BB0")
+#' @param CIs  Option to show CIs
+#' @param flim max ylim value for FFmsy plot
+#' @param output.dir directory to save plots
+#' @param as.png save as png file of TRUE
+#' @param add if true don't call par() to allow construction of multiplots
+#' @param mfrow set up plot frame  
+#' @param width plot width
+#' @param height plot hight
+#' @export
+jbplot_prj <-  function(jabba, type = c("BB0","BBmsy","FFmsy"),CIs=TRUE,flim=6,output.dir=getwd(),as.png=FALSE,add=FALSE,mfrow=c(1,1),width=5,height=3.5){
+  
+  for(i in 1:length(type)){
+    
+    Par = list(mfrow=c(1,1),mar = c(3.5, 3.5, 0.5, 0.1), mgp =c(2.,0.5,0), tck = -0.02,cex=0.8)
+    if(as.png==TRUE){png(file = paste0(output.dir,"/prj",type[i],"_",jabba$assessment,"_",jabba$scenario,".png"), width = width, height = height,
+                         res = 200, units = "in")}
+    if(add==FALSE){par(Par)}
+    cat(paste0("\n","><> jbplot_prj() - ", type[i]," trajectory  <><","\n"))
+    nTAC = jabba$settings$nTAC
+    TACs = jabba$settings$TAC[1,]
+    imp.yr=jabba$settings$TAC.implementation
+    cols= jabba$settings$cols
+    shaded = rev(seq(0.4,0.9,0.5/nTAC))
+    j = which(c("BB0","BBmsy","FFmsy")%in%type[i])
+    ylabs = c(expression(B/B[0]),expression(B/B[MSY]),ifelse(jabba$settings$harvest.label=="Fmsy",expression(F/F[MSY]),expression(H/h[MSY])))
+    prj = jabba$projections[,,,paste(type[i])]
+    yrs = as.numeric(dimnames(jabba$projections)[[1]])
+    ylim = c(0, max( c(max(jabba$projections[,ifelse(CIs,3,1),,paste(type[i])]),ifelse(type[i]=="BB0",1,2))))
+    ylim[2] = min(flim,ylim[2])
+    plot(yrs,yrs,ylim=ylim,xlim=c(min(yrs+0.3),max(yrs)),type="n",ylab=ylabs[j],xlab="Projection Years")
+    
+    if(CIs==TRUE){
+    for(j in jabba$settings$nTAC:1)polygon(c(yrs,rev(yrs)),c(prj[,2,j],rev(prj[,3,j])),col=grey(shaded[j],1),border=NA)  
+    }
+    for(j in 1:jabba$settings$nTAC) lines(yrs,prj[,1,j],col=cols[j],lwd=2)  
+    lines(yrs[1:(imp.yr-max(jabba$yr)+ifelse(type[i]=="FFmsy",0,1))],   prj[,1,1][1:(imp.yr-max(jabba$yr)++ifelse(type[i]=="FFmsy",0,1))],col=1,lwd=2.2)
+    
+    if(type[i]%in%c("BBmsy","FFmsy") ) lines(yrs,rep(1,length(yrs)),lty=5)
+    if(type[i]=="BB0"){
+      lines(c(yrs[1]-1,yrs[-1]),rep(jabba$refpts$bmsy[1]/jabba$refpts$k[1],length(yrs)),lty=5)
+      text((max(yrs)-min(yrs)-1)/30+yrs[1],jabba$refpts$bmsy[1]/jabba$refpts$k[1]*1.11,expression(paste(B[MSY])))
+    }
+    legend("topleft",paste(TACs,"(t)"),col=(jabba.colors[1:nTAC]),lwd=2,cex=0.8)   
+  
+    if(as.png==TRUE){
+      if(add==FALSE | i==length(type)){dev.off()}}
+    
+  }} # end of plot function
+
+
 #' JABBA SP-Phase Plot
 #'
 #' plots the production relative catch over biomass and color-coded kobe phases

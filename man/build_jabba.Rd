@@ -5,11 +5,11 @@
 \title{Creates a data list used as input to JAGS}
 \usage{
 build_jabba(
-  catch = NULL,
-  cpue = NULL,
-  se = NULL,
-  assessment = "example",
-  scenario = "s1",
+  catch = iccat$bet$catch,
+  cpue = iccat$bet$cpue,
+  se = iccat$bet$se,
+  assessment = "bet_example",
+  scenario = "test",
   model.type = c("Schaefer", "Fox", "Pella", "Pella_m"),
   add.catch.CV = TRUE,
   catch.cv = 0.1,
@@ -43,11 +43,7 @@ build_jabba(
   KOBE.plot = TRUE,
   KOBE.type = c("ICCAT", "IOTC")[2],
   Biplot = FALSE,
-  save.trajectories = FALSE,
   harvest.label = c("Hmsy", "Fmsy")[2],
-  CPUE.plot = TRUE,
-  meanCPUE = FALSE,
-  save.projections = FALSE,
   catch.metric = "(t)"
 )
 }
@@ -124,23 +120,15 @@ VARIANCE options}
 
 \item{KOBE.type}{= c("ICCAT","IOTC")[2], # ICCAT uses 3 colors; IOTC 4 (incl. orange)}
 
-\item{save.trajectories}{=FALSE, # saves posteriors of P=B/K, B/Bmsy and H/Hmsy as .RData object}
-
 \item{harvest.label}{= c("Hmsy","Fmsy")[2], # choose label preference H/Hmsy versus Fmsy}
 
-\item{meanCPUE}{= FALSE, # Uses averaged CPUE from state-space tool instead of individual indices}
-
-\item{save.projections}{= FALSE, # saves projection posteriors as .RData object}
-
-\item{catch.metric}{= "(t)" # Define cat}
+\item{catch.metric}{"(t)" # Define catch input metric e.g. (tons) "000 t"}
 
 \item{q_bounds=}{c(10^-30,1000), # Defines lower and upper bounds for q}
 
 \item{K_bounds=}{c(0.01,10^10), # Defines lower and upper bounds for q}
 
 \item{Biplot=}{FALSE, # Produces a "post-modern" biplot with buffer and target zones (Quinn & Collie 2005)}
-
-\item{CPUE.plot=}{TRUE, # Runs state-tool to produce "alligned" multi-CPUE plot}
 }
 \value{
 List to be used as data input to JABBA JAGS model.

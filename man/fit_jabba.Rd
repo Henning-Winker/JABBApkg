@@ -11,14 +11,14 @@ fit_jabba(
   nb = 5000,
   nc = 2,
   init.values = FALSE,
-  K.init = NULL,
-  r.init = NULL,
-  q.init = NULL,
+  init.K = NULL,
+  init.r = NULL,
+  init.q = NULL,
   peels = NULL,
   save.all = FALSE,
   save.jabba = FALSE,
   save.csvs = FALSE,
-  save.projections = NULL,
+  save.prjkobe = FALSE,
   output.dir = getwd()
 )
 }
@@ -36,11 +36,11 @@ MCMC settings}
 
 \item{init.values}{= FALSE,}
 
-\item{K.init}{= NULL,}
+\item{init.K}{= NULL,}
 
-\item{r.init}{= NULL,}
+\item{init.r}{= NULL,}
 
-\item{q.init}{= NULL,# vector}
+\item{init.q}{= NULL,# vector}
 
 \item{peels}{= NULL, # retro peel option}
 
