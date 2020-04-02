@@ -777,7 +777,7 @@ jbplot_prj <-  function(jabba, type = c("BB0","BBmsy","FFmsy"),CIs=TRUE,flim=6,o
       lines(c(yrs[1]-1,yrs[-1]),rep(jabba$refpts$bmsy[1]/jabba$refpts$k[1],length(yrs)),lty=5)
       text((max(yrs)-min(yrs)-1)/30+yrs[1],jabba$refpts$bmsy[1]/jabba$refpts$k[1]*1.11,expression(paste(B[MSY])))
     }
-    legend("topleft",paste(TACs,"(t)"),col=(jabba.colors[1:nTAC]),lwd=2,cex=0.8)   
+    legend("topleft",paste(TACs,"(t)"),col=(cols[1:nTAC]),lwd=2,cex=0.8)   
   
     if(as.png==TRUE){
       if(add==FALSE | i==length(type)){dev.off()}}
