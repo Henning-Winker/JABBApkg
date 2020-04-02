@@ -52,7 +52,7 @@ fit_jabba = function(jbinput,
   jbd = jbinput$jagsdata
   # Initial starting values (new Eq)
   if(init.values==FALSE){
-    inits = function(){list(K= rlnorm(1,log(jbd$K.pr[1])-0.5*0.3^2,0.3),r = rlnorm(1,log(jbd$r.pr[1]),jbd$r.pr[2]) ,q = runif(jbd$nq,min(jbd$I,na.rm=T)/max(jbd$TC,na.rm=T),min(jbd$I,2,na.rm=T)/max(jbd$TC,na.rm=T)), isigma2.est=runif(1,20,100), itau2=runif(jbd$nvar,80,200))}
+    inits = function(){list(K= rlnorm(1,log(jbd$K.pr[1])-0.5*0.3^2,0.3),r = rlnorm(1,log(jbd$r.pr[1]),jbd$r.pr[2]) ,q = runif(jbd$nq,min(jbd$I,na.rm=T)/max(jbd$TC,na.rm=T),mean(jbd$I,na.rm=T)/max(jbd$TC,na.rm=T)), isigma2.est=runif(1,20,100), itau2=runif(jbd$nvar,80,200))}
   }else {
     if(is.null(init.K))
       stop("\n","\n","><> Provide init.K guess for option init.values=TRUE  <><","\n","\n")
