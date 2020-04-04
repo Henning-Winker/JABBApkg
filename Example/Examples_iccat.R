@@ -25,6 +25,8 @@ jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessm
 # Fit JABBA (here mostly default value - careful)
 bet1 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
 
+
+
 # Make individual plots
 jbplot_catch(bet1)
 jbplot_catcherror(bet1)

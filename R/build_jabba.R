@@ -68,10 +68,10 @@ build_jabba <- function(
   sets.q = 1:(ncol(cpue)-1), # assigns catchability q to different CPUE indices. Default is each index a seperate q
   sigma.est = TRUE, # Estimate additional observation variance
   sets.var = 1:(ncol(cpue)-1), # estimate individual additional variace
-  fixed.obsE = ifelse(is.null(se),0.05,0.2), # Minimum fixed observation erro
+  fixed.obsE = ifelse(is.null(se),0.1,0.001), # Minimum fixed observation erro
   sigma.proc =  TRUE, # TRUE: Estimate observation error, else set to value
   proc.dev.all = TRUE, # TRUE: All year, year = starting year
-  igamma = c(3,0.01), # informative mean 0.07, CV 0.4
+  igamma = c(4,0.01), # informative mean 0.05, CV 0.4 from original paper
   projection = FALSE, # Switch on by Projection = TRUE
   TACs = NULL, # vector of fixed catches used for projections  
   TACint =  NULL, # default avg last 3 years

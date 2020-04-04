@@ -485,7 +485,7 @@ jbplot_residuals <- function(jabba,output.dir=getwd(),as.png = FALSE,add=FALSE, 
       for(t in 1:n.years){
         lines(rep((Yr+positions[i])[t],2),c(0,Resids[i,t]),col=jabba$settings$cols[i])}
       points(Yr+positions[i],Resids[i,],col=1,pch=21,bg=jabba$settings$cols[i])}
-    mean.res = apply(Resids[,as.numeric(colnames(Resids))%in%cpue.yrs],2,mean,na.rm =TRUE)
+    mean.res = apply(Resids,2,mean,na.rm =TRUE)[as.numeric(colnames(Resids))%in%cpue.yrs]
     smooth.res = predict(loess(mean.res~cpue.yrs),data.frame(cpue.yrs=cpue.yrs))
     lines(cpue.yrs,smooth.res,lwd=2)
     # get degree of freedom
@@ -541,7 +541,7 @@ jbplot_stdresiduals <- function(jabba, output.dir=getwd(),as.png=FALSE,add=FALSE
       for(t in 1:n.years){
         lines(rep((Yr+positions[i])[t],2),c(0,StResid[i,t]),col=jabba$settings$cols[i])}
       points(Yr+positions[i],StResid[i,],col=1,pch=21,bg=jabba$settings$cols[i])}
-    mean.res = apply(StResid[,as.numeric(colnames(StResid))%in%cpue.yrs],2,mean,na.rm =TRUE)
+    mean.res = apply(StResid,2,mean,na.rm =TRUE)[as.numeric(colnames(Resids))%in%cpue.yrs]
     smooth.res = predict(loess(mean.res~cpue.yrs),data.frame(cpue.yrs=cpue.yrs))
     lines(cpue.yrs,smooth.res,lwd=2)
     SDNR = round(sqrt(sum(StResid^2,na.rm =TRUE)/(jabba$stats[1,2]-1)),2)
