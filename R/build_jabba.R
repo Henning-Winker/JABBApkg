@@ -401,6 +401,7 @@ build_jabba <- function(
   jbinput$data$se = se
   jbinput$jagsdata = surplus.dat
   jbinput$settings$params = params
+  jbinput$settings$BmsyK = BmsyK 
   jbinput$settings$psi.dist = psi.dist
   jbinput$settings$psi.prior.raw = psi.prior
   jbinput$settings$SE.I = SE.I
