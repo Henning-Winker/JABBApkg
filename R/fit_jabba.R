@@ -134,7 +134,7 @@ fit_jabba = function(jbinput,
   # Prepare posterior quantaties
   man.dat = data.frame(man.dat,Depletion,B_Bmsy.cur,H_Hmsy.cur)
 
-  results = round(t(cbind(apply(par.dat,2,quantile,c(0.025,0.5,0.975)))),3)
+  results = t(cbind(apply(par.dat,2,quantile,c(0.025,0.5,0.975)))) 
 
   results = data.frame(Median = results[,2],LCI=results[,1],UCI=results[,3],Geweke.p=round(pvalues,3),Heidel.p = round(heidle[,3],3))
 
