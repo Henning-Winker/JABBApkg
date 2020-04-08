@@ -70,7 +70,7 @@ fit_jabba = function(jbinput,
 
 
   # retrospecitive peel
-  years = jbinput$data$yr
+  years = jbinput$settings$yr
   if(is.null(peels)) peels = 0
   if(peels > 0){
     jbinput$jagsdata$I[(length(years)-peels+1) : length(years),]  = NA

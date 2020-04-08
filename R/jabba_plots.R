@@ -166,7 +166,7 @@ jbplot_ppdist <- function(jabba, output.dir=getwd(),as.png = FALSE,mfrow=c(round
     if(i>4){
       if(jabba$settings$sigma.proc!=TRUE & i==length(node_id)) {
         plot(1,1,type="n",xlim=range(0,0.15^2),yaxt="n",xlab=paste(node_id[i]),ylab="",xaxs="i",yaxs="i")
-        abline(v=sigma.proc^2,lwd=2)} else {
+        abline(v=jabba$settings$sigma.proc^2,lwd=2)} else {
 
           pdf = stats::density(post.par,adjust=2)
           plot(pdf,type="l",xlim=range(0,post.par),yaxt="n",xlab=paste(node_id[i]),ylab="",xaxs="i",yaxs="i",main="")
