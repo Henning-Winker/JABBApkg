@@ -424,7 +424,7 @@ build_jabba <- function(
   #-------------------------------------------------------------------
   # write JAGS MODEL
 
-  jabba2jags(jbinput)
+  #jabba2jags(jbinput)
 
   return(jbinput)
 

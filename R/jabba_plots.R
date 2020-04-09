@@ -706,6 +706,7 @@ jbplot_trj <-  function(jabba, type = c("B","F","BBmsy","FFmsy","BB0"),output.di
 
     j = which(c("B","F","BBmsy","FFmsy","BB0")%in%type[i])
     ylabs = c(paste("Biomass",jabba$settings$catch.metric),ifelse(jabba$settings$harvest.label=="Fmsy","Fishing mortality F","Harvest rate H"),expression(B/B[MSY]),ifelse(jabba$settings$harvest.label=="Fmsy",expression(F/F[MSY]),expression(H/h[MSY])),expression(B/B[0]))
+    
     trj = jabba$timeseries[,,paste(type[i])]
     years = jabba$yr
     ylim = c(0, max(trj[,3]))

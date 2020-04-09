@@ -46,6 +46,9 @@ fit_jabba = function(jbinput,
                      save.prjkobe = FALSE,
                      output.dir = getwd()
 ){
+  #write jabba model
+  jabba2jags(jbinput)
+  
   # mcmc saved
   nsaved = (ni-nb)/nt*nc
   # jabba model data
