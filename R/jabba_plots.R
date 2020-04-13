@@ -1293,7 +1293,7 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
           for(i in 1:length(scenarios)){
             ylc = jbs$timeseries$lci[runs%in%scenarios[i],j+2]
             yuc = jbs$timeseries$uci[runs%in%scenarios[i],j+2]
-            polygon(c(years,rev(years)),c(ylc,rev(yuc)),col=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"),border=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"))
+            polygon(c(years,rev(years)),c(ylc,rev(yuc)),col=ifelse(length(scenarios)>1,scales::alpha(cols[i],0.2),"grey"),border=ifelse(length(scenarios)>1,scales::alpha(cols[i],0.2),"grey"))
           }}
         for(i in 1:length(scenarios)){
           lines(years,y[runs%in%scenarios[i]],col= cols[i],lwd=2,lty=1)
@@ -1328,7 +1328,7 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
           for(i in 1:length(scenarios)){
             ylc = jbs$timeseries$lci[runs%in%scenarios[i],j+2]
             yuc = jbs$timeseries$uci[runs%in%scenarios[i],j+2]
-            polygon(c(years,rev(years)),c(ylc,rev(yuc)),col=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"),border=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"))
+            polygon(c(years,rev(years)),c(ylc,rev(yuc)),col=ifelse(length(scenarios)>1,scales::alpha(cols[i],0.2),"grey"),border=ifelse(length(scenarios)>1,scales::alpha(cols[i],0.2),"grey"))
           }}
         for(i in 1:length(scenarios)){
           lines(years,y[runs%in%scenarios[i]],col= cols[i],lwd=2,lty=1)
