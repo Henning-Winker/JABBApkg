@@ -1257,7 +1257,7 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
     
   }
   if(save.summary){
-    save(jbs,file=paste0(output.dir,"/",assessment,"_summary.rdata"))
+    save(jbs,file=paste0(output.dir,"/",prefix,"_",assessment,"_summary.rdata"))
   }
   jbs$settings$cols = jabba$settings$cols
   jbs$settings$harvest = jabba$settings$harvest.label
