@@ -196,7 +196,7 @@ jabba_hindcast = function(jbinput,
                           speedup = TRUE 
 ){
   # hindcast object define object  
-  hc = list(yr=jbinput$data$yr,catch=jbinput$jagsdata$TC,peels=peels,timeseries = NULL,refpts=NULL,pfunc=NULL,diags=NULL,settings=NULL)
+  hc = list(scenario = jbinput$settings$scenario, yr=jbinput$data$yr,catch=jbinput$jagsdata$TC,peels=peels,timeseries = NULL,refpts=NULL,pfunc=NULL,diags=NULL,settings=NULL)
   hc$settings$cols = jbinput$settings$cols
   hc$settings$harvest = jbinput$settings$harvest.label
   hc$settings$catch.metric = jbinput$settings$catch.metric

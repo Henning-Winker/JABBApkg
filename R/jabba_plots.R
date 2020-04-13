@@ -1122,3 +1122,96 @@ jabba_plots = function(jabba,output.dir = getwd(),as.png=TRUE,statusplot ="kobe"
 }
 
 
+
+#' jbplot_retro() to plot retrospective pattern
+#'
+#' Plots retrospective pattern of B, F, BBmsy, FFmsy, BB0 and SP #'
+#' @param hc output from jabba_hindast()
+#' @param output.dir directory to save plots
+#' @param as.png save as png file of TRUE
+#' @param single.plots if TRUE plot invidual fits else make multiplot
+#' @param width plot width
+#' @param height plot hight
+#' @param Xlim  allows to "zoom-in" requires speficiation Xlim=c(first.yr,last.yr)
+#' @export
+jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,width=NULL,height=NULL,Xlim=NULL){
+  
+  cat(paste0("\n","><> jbplot_retro() - retrospective analysis <><","\n"))
+  
+  type=c("B","F","BBmsy","FFmsy","BB0","SP")
+  ylabs = c(paste("Biomass",hc$settings$catch.metric),ifelse(hc$settings$harvest=="Fmsy","Fishing mortality F","Harvest rate H"),expression(B/B[MSY]),ifelse(hc$settings$harvest=="Fmsy",expression(F/F[MSY]),expression(H/H[MSY])),expression(B/B[0]),paste("Surplus Production",hc$settings$catch.metric))
+  retros = unique(hc$timeseries$mu$level)
+  runs= hc$timeseries$mu$level
+  years= hc$yr
+  nyrs = length(years)
+  cols= c(1,hc$settings$cols)
+  if(is.null(Xlim)){Xlim = range(years)}
+  
+  if(single.plots==TRUE){
+    if(is.null(width)) width = 5
+    if(is.null(height)) height = 3.5
+    for(k in 1:length(type)){
+      Par = list(mfrow=c(1,1),mar = c(3.5, 3.5, 0.5, 0.1), mgp =c(2.,0.5,0), tck = -0.02,cex=0.8)
+      if(as.png==TRUE){png(file = paste0(output.dir,"/Retro",hc$scenario ,"_",type[k],".png"), width = width, height = height,
+                           res = 200, units = "in")}
+      
+      if(as.png==TRUE | i==1) par(Par)
+      
+      j = which(c("B","F","BBmsy","FFmsy","BB0","SP")%in%type[k])
+      
+      
+      if(type[k]%in%c("B","F","BBmsy","FFmsy","BB0")){
+        y = hc$timeseries$mu[,j+2]
+        ylc = hc$timeseries$lci[runs%in%retros[1],j+2]
+        yuc = hc$timeseries$uci[runs%in%retros[1],j+2]
+        plot(years,years,type="n",ylim=c(0,max(y[years>=Xlim[1] & years<=Xlim[2]],yuc[years>=Xlim[1] & years<=Xlim[2]])),ylab=ylabs[j],xlab="Year",xlim=Xlim)
+        polygon(c(years,rev(years)),c(ylc,rev(yuc)),col="grey",border="grey")
+        for(i in 1:length(retros)){
+          lines(years[1:(nyrs-retros[i])],y[runs%in%retros[i]][1:(nyrs-retros[i])],col= cols[i],lwd=2,lty=1)
+        }
+      }  else {
+        # Plot SP
+        plot(years,years,type="n",ylim=c(0,max(hc$pfunc$SP)),xlim=c(0,max(hc$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
+        for(i in 1:length(retros)){
+          lines(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]],hc$pfunc$SP[hc$pfunc$level%in%retros[i]],col=cols[i],lwd=2,lty=1)
+          points(mean(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]][hc$pfunc$SP[hc$pfunc$level%in%retros[i]]==max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]])]),max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]]),col=cols[i],pch=16,cex=1.2)
+        }}
+      if(single.plots==TRUE | k==1 )  legend("topright",paste(years[nyrs-retros]),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(retros))))
+      if(as.png==TRUE) dev.off()
+    } # End type loop
+  } else { # Multi plot
+    if(is.null(width)) width = 6.5
+    if(is.null(height)) height = 8 
+    Par = list(mfrow=c(3,2),mai=c(0.45,0.49,0,.15),omi = c(0.15,0.15,0.1,0) + 0.1,mgp=c(2,0.5,0), tck = -0.02,cex=0.8)
+    if(as.png==TRUE){png(file = paste0(output.dir,"/Retro_",hc$scenario,".png"), width = width, height = height,
+                         res = 200, units = "in")}
+    par(Par)
+    for(k in 1:length(type)){
+      
+      j = which(c("B","F","BBmsy","FFmsy","BB0","SP")%in%type[k])
+      
+      
+      if(type[k]%in%c("B","F","BBmsy","FFmsy","BB0")){
+        y = hc$timeseries$mu[,j+2]
+        ylc = hc$timeseries$lci[runs%in%retros[1],j+2]
+        yuc = hc$timeseries$uci[runs%in%retros[1],j+2]
+        plot(years,years,type="n",ylim=c(0,max(y[years>=Xlim[1] & years<=Xlim[2]],yuc[years>=Xlim[1] & years<=Xlim[2]])),ylab=ylabs[j],xlab="Year",xlim=Xlim)
+        polygon(c(years,rev(years)),c(ylc,rev(yuc)),col="grey",border="grey")
+        for(i in 1:length(retros)){
+          lines(years[1:(nyrs-retros[i])],y[runs%in%retros[i]][1:(nyrs-retros[i])],col= cols[i],lwd=2,lty=1)
+        }
+        if(single.plots==TRUE | k==1 )  legend("topright",paste(years[nyrs-retros]),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(retros))))
+      }  else {
+        # Plot SP
+        plot(years,years,type="n",ylim=c(0,max(hc$pfunc$SP)),xlim=c(0,max(hc$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
+        for(i in 1:length(retros)){
+          lines(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]],hc$pfunc$SP[hc$pfunc$level%in%retros[i]],col=cols[i],lwd=2,lty=1)
+          points(mean(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]][hc$pfunc$SP[hc$pfunc$level%in%retros[i]]==max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]])]),max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]]),col=cols[i],pch=16,cex=1.2)
+        }}
+      
+      
+    }
+    if(as.png==TRUE) dev.off()
+  }
+  
+} # end of Retrospective Plot
