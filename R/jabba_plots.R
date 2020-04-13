@@ -1155,7 +1155,7 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
       if(as.png==TRUE){png(file = paste0(output.dir,"/Retro",hc$scenario ,"_",type[k],".png"), width = width, height = height,
                            res = 200, units = "in")}
       
-      if(as.png==TRUE | i==1) par(Par)
+      if(as.png==TRUE | k==1) par(Par)
       
       j = which(c("B","F","BBmsy","FFmsy","BB0","SP")%in%type[k])
       
