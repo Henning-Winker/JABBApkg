@@ -2,7 +2,7 @@
 % Please edit documentation in R/jabba_utils.R
 \name{jabba_hindcast}
 \alias{jabba_hindcast}
-\title{jabba_hindcast()}
+\title{jabba hindcasting function}
 \usage{
 jabba_hindcast(
   jbinput,

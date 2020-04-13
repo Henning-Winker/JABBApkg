@@ -155,7 +155,7 @@ runs_sig3 <- function(x,type=NULL) {
   return(list(sig3lim=c(lcl,ucl),p.runs= pvalue))
 }
 
-#' jabba_hindcast()
+#' jabba hindcasting function
 #'
 #' Wrapper to coduct histcasts for retrospective analysis and cross-validation
 #' @param jbinput List of input variables as output by build_jabba()
@@ -177,7 +177,6 @@ runs_sig3 <- function(x,type=NULL) {
 #' @param speedup Reduces MCMC after setting runs 2+ inits to first "full" reference run
 #' @return hc containing estimates of key joint results from all hindcast run 
 #' @export
-
 jabba_hindcast = function(jbinput,
                           # MCMC settings
                           ni = 30000, # Number of iterations
@@ -255,6 +254,5 @@ jabba_hindcast = function(jbinput,
   }
   return(hc)
 } #end of hindcast function 
-#------------------------------------------------------------------------------------------------------------------------------------
 
 
