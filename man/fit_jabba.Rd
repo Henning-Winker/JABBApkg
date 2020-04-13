@@ -32,7 +32,8 @@ MCMC settings}
 
 \item{nb}{burn-in}
 
-\item{nc}{number of mcmc chains}
+\item{nc}{number of mcmc chains
+Initial values}
 
 \item{init.values}{= FALSE,}
 

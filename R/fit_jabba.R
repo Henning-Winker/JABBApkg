@@ -8,11 +8,6 @@
 #' @param nb burn-in
 #' @param nc number of mcmc chains
 #' Initial values
-#' @param nc number of mcmc chains
-#' @param nc number of mcmc chains
-#' @param nc number of mcmc chains
-#' @param nc number of mcmc chains
-#' @param nc number of mcmc chains
 #' @param init.values = FALSE,
 #' @param init.K = NULL,
 #' @param init.r = NULL,
@@ -21,7 +16,6 @@
 #' @param save.jabba = FALSE
 #' @param save.all = FALSE
 #' @param output.dir path to save plot. default is getwd()
-
 #' @return A result list containing estimates of model input, settings and results
 #' @export
 #' @examples
