@@ -175,8 +175,9 @@ runs_sig3 <- function(x,type=NULL) {
 #' @param save.hc Save hindcast list output as .rdata
 #' @param plotall if TRUE makes jabba_plots() for each run    
 #' @param speedup Reduces MCMC after setting runs 2+ inits to first "full" reference run
-#' @return hc = list() containing estimates of key joint results from all hindcast run 
+#' @return hc containing estimates of key joint results from all hindcast run 
 #' @export
+
 jabba_hindcast = function(jbinput,
                           # MCMC settings
                           ni = 30000, # Number of iterations

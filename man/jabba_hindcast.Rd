@@ -56,7 +56,7 @@ Initial values}
 \item{speedup}{Reduces MCMC after setting runs 2+ inits to first "full" reference run}
 }
 \value{
-hc = list() containing estimates of key joint results from all hindcast run
+hc containing estimates of key joint results from all hindcast run
 }
 \description{
 Wrapper to coduct histcasts for retrospective analysis and cross-validation
