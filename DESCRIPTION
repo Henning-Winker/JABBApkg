@@ -21,11 +21,11 @@ Imports:
       rjags,
       R2jags,
       snpar,
-      reshape
+      reshape,
+      scales
 Suggests:      
       fitdistrplus,
-      mvtnorm,
-      scales
+      mvtnorm
 License: EUPL
 Encoding: UTF-8
 LazyData: true

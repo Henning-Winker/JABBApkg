@@ -1180,9 +1180,9 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
       if(as.png==TRUE) dev.off()
     } # End type loop
   } else { # Multi plot
-    if(is.null(width)) width = 6.5
+    if(is.null(width)) width = 7
     if(is.null(height)) height = 8 
-    Par = list(mfrow=c(3,2),mai=c(0.45,0.49,0,.15),omi = c(0.15,0.15,0.1,0) + 0.1,mgp=c(2,0.5,0), tck = -0.02,cex=0.8)
+    Par = list(mfrow=c(3,2),mai=c(0.45,0.49,0.1,.15),omi = c(0.15,0.15,0.1,0) + 0.1,mgp=c(2,0.5,0), tck = -0.02,cex=0.8)
     if(as.png==TRUE){png(file = paste0(output.dir,"/Retro_",hc$scenario,".png"), width = width, height = height,
                          res = 200, units = "in")}
     par(Par)
@@ -1215,3 +1215,138 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
   }
   
 } # end of Retrospective Plot
+
+
+#' jbplot_summary() 
+#'
+#' Compares B, F, BBmsy, FFmsy, BB0 and SP for various model scanarios that have to be saved as rdata 
+#' @param scenarios Names of model scenarios to compare
+#' @param assessment Name of assessment as specified in jbinput
+#' @param mod.path Directory of saved model runs or vector 
+#' @param plotCIs Plot Credibilty Interval 
+#' @param prefix Plot name specifier
+#' @param save.summary option to save a summary of all loaded model runs
+#' @param output.dir directory to save plots
+#' @param as.png save as png file of TRUE
+#' @param single.plots if TRUE plot invidual fits else make multiplot
+#' @param width plot width
+#' @param height plot hight
+#' @param Xlim allows to "zoom-in" requires speficiation Xlim=c(first.yr,last.yr)
+#' @export
+jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotCIs=TRUE,prefix="Summary",save.summary=FALSE,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,width=NULL,height=NULL,Xlim=NULL){
+  
+  cat(paste0("\n","><> jbplot_compare() - requires save.jabba = TRUE in fit_jabba() <><","\n"))
+  jbs = list(assessment=assessment,yr= NULL,catch=NULL,timeseries = NULL,refpts=NULL,pfunc=NULL,diags=NULL,settings=NULL)
+  
+  for(i in 1:length(scenarios)){
+    if(file.exists(paste0(output.dir,"/",assessment,"_",scenarios[i],"_jabba.rdata"))==FALSE){
+      stop(paste0("fit_jabba() output - ",assessment,"_",scenarios[i],"_jabba.rdata - does not exist in specified path!"))  
+    }
+    
+    load(paste0(output.dir,"/",assessment,"_",scenarios[i],"_jabba.rdata"),verbose=T)
+    if(s==1){
+      jbs$yr = jabba$yr
+      jbs$catch = jabba$catch
+    }
+    jbs$timeseries$mu = rbind(jbs$timeseries$mu,data.frame(factor=jabba$diags[1,1],level=jabba$diags[1,2],jabba$timeseries[,"mu",])) 
+    jbs$timeseries$lci = rbind(jbs$timeseries$lci,data.frame(factor=jabba$diags[1,1],level=jabba$diags[1,2],jabba$timeseries[,"lci",])) 
+    jbs$timeseries$uci = rbind(jbs$timeseries$uci,data.frame(factor=jabba$diags[1,1],level=jabba$diags[1,2],jabba$timeseries[,"uci",])) 
+    jbs$diags = rbind(jbs$diags,jabba$diags)
+    jbs$refpts= rbind(jbs$refpts,jabba$refpts[1,])
+    jbs$pfunc= rbind(jbs$pfunc ,jabba$pfunc)
+    
+  }
+  if(save.summary){
+    save(jbs,file=paste0(output.dir,"/",assessment,"_summary.rdata"))
+  }
+  jbs$settings$cols = jabba$settings$cols
+  jbs$settings$harvest = jabba$settings$harvest.label
+  jbs$settings$catch.metric = jabba$settings$catch.metric  
+  
+  
+  type=c("B","F","BBmsy","FFmsy","BB0","SP")
+  ylabs = c(paste("Biomass",jabba$settings$catch.metric),ifelse(jabba$settings$harvest=="Fmsy","Fishing mortality F","Harvest rate H"),expression(B/B[MSY]),ifelse(jabba$settings$harvest=="Fmsy",expression(F/F[MSY]),expression(H/H[MSY])),expression(B/B[0]),paste("Surplus Production",jabba$settings$catch.metric))
+  runs= jbs$timeseries$mu$level
+  years= jbs$yr
+  nyrs = length(years)
+  if(length(scenarios)>1){cols= c(jbs$settings$cols)}else(cols=1)
+  
+  if(is.null(Xlim)){Xlim = range(years)}
+  
+  if(single.plots==TRUE){
+    if(is.null(width)) width = 5
+    if(is.null(height)) height = 3.5
+    for(k in 1:length(type)){
+      Par = list(mfrow=c(1,1),mar = c(3.5, 3.5, 0.5, 0.1), mgp =c(2.,0.5,0), tck = -0.02,cex=0.8)
+      if(as.png==TRUE){png(file = paste0(output.dir,"/",prefix,"_",jbs$assessment,"_",type[k],".png"), width = width, height = height,
+                           res = 200, units = "in")}
+      
+      if(as.png==TRUE | k==1) par(Par)
+      
+      j = which(c("B","F","BBmsy","FFmsy","BB0","SP")%in%type[k])
+      
+      
+      if(type[k]%in%c("B","F","BBmsy","FFmsy","BB0")){
+        y = jbs$timeseries$mu[,j+2]
+        plot(years,years,type="n",ylim=c(0,max(y[years>=Xlim[1] & years<=Xlim[2]],ifelse(plotCIs==T,max(jbs$timeseries$uci[,j+2][years>=Xlim[1] & years<=Xlim[2]]),0))),ylab=ylabs[j],xlab="Year",xlim=Xlim)
+        if(plotCIs==TRUE){
+          for(i in 1:length(scenarios)){
+            ylc = jbs$timeseries$lci[runs%in%scenarios[i],j+2]
+            yuc = jbs$timeseries$uci[runs%in%scenarios[i],j+2]
+            polygon(c(years,rev(years)),c(ylc,rev(yuc)),col=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"),border=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"))
+          }}
+        for(i in 1:length(scenarios)){
+          lines(years,y[runs%in%scenarios[i]],col= cols[i],lwd=2,lty=1)
+        }
+      }  else {
+        # Plot SP
+        plot(years,years,type="n",ylim=c(0,max(jbs$pfunc$SP)),xlim=c(0,max(jbs$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
+        for(i in 1:length(scenarios)){
+          lines(jbs$pfunc$SB_i[jbs$pfunc$level%in%scenarios[i]],jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]],col=cols[i],lwd=2,lty=1)
+          points(mean(jbs$pfunc$SB_i[jbs$pfunc$level%in%scenarios[i]][jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]]==max(jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]])]),max(jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]]),col=cols[i],pch=16,cex=1.2)
+        }
+      }
+      if(single.plots==TRUE | k==1 )  legend("topright",paste(scenarios),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(scenarios))))
+      if(as.png==TRUE) dev.off()
+    } # End type loop
+  } else { # Multi plot
+    if(is.null(width)) width = 7
+    if(is.null(height)) height = 8 
+    Par = list(mfrow=c(3,2),mai=c(0.45,0.49,0.1,.15),omi = c(0.15,0.15,0.1,0) + 0.1,mgp=c(2,0.5,0), tck = -0.02,cex=0.8)
+    if(as.png==TRUE){png(file = paste0(output.dir,"/",prefix,"_",jbs$assessment,".png"), width = width, height = height,
+                         res = 200, units = "in")}
+    par(Par)
+    for(k in 1:length(type)){
+      
+      j = which(c("B","F","BBmsy","FFmsy","BB0","SP")%in%type[k])
+      
+      
+      if(type[k]%in%c("B","F","BBmsy","FFmsy","BB0")){
+        y = jbs$timeseries$mu[,j+2]
+        plot(years,years,type="n",ylim=c(0,max(y[years>=Xlim[1] & years<=Xlim[2]],ifelse(plotCIs==T,max(jbs$timeseries$uci[,j+2][years>=Xlim[1] & years<=Xlim[2]]),0))),ylab=ylabs[j],xlab="Year",xlim=Xlim)
+        if(plotCIs==TRUE){
+          for(i in 1:length(scenarios)){
+            ylc = jbs$timeseries$lci[runs%in%scenarios[i],j+2]
+            yuc = jbs$timeseries$uci[runs%in%scenarios[i],j+2]
+            polygon(c(years,rev(years)),c(ylc,rev(yuc)),col=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"),border=ifelse(length(scenarios)>1,alpha(cols[i],0.2),"grey"))
+          }}
+        for(i in 1:length(scenarios)){
+          lines(years,y[runs%in%scenarios[i]],col= cols[i],lwd=2,lty=1)
+        }
+        if(single.plots==TRUE | k==1 )  legend("topright",paste(scenarios),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(scenarios))))
+        
+s      }  else {
+        # Plot SP
+        plot(years,years,type="n",ylim=c(0,max(jbs$pfunc$SP)),xlim=c(0,max(jbs$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
+        for(i in 1:length(scenarios)){
+          lines(jbs$pfunc$SB_i[jbs$pfunc$level%in%scenarios[i]],jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]],col=cols[i],lwd=2,lty=1)
+          points(mean(jbs$pfunc$SB_i[jbs$pfunc$level%in%scenarios[i]][jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]]==max(jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]])]),max(jbs$pfunc$SP[jbs$pfunc$level%in%scenarios[i]]),col=cols[i],pch=16,cex=1.2)
+        }
+      }
+      
+      
+    }
+    if(as.png==TRUE) dev.off()
+  }
+} # end of Summary Plot
+
