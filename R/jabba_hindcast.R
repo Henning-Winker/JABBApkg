@@ -55,9 +55,9 @@ jabba_hindcast = function(jbinput,
       rin = init.r
       qin = init.q
     } else {
-      mci = 5500
-      mct = 1
-      mcb = 500
+      mci = 11000
+      mct = 2
+      mcb = 1000
       mcc = 2
       init.values=TRUE
     } 

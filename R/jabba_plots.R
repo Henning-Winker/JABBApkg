@@ -1169,6 +1169,7 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
         for(i in 1:length(retros)){
           lines(years[1:(nyrs-retros[i])],y[runs%in%retros[i]][1:(nyrs-retros[i])],col= cols[i],lwd=2,lty=1)
         }
+        if(type[k]%in%c("BBmsy","FFmsy")) abline(h=1,lty=2)
       }  else {
         # Plot SP
         plot(years,years,type="n",ylim=c(0,max(hc$pfunc$SP)),xlim=c(0,max(hc$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
@@ -1200,6 +1201,7 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
         for(i in 1:length(retros)){
           lines(years[1:(nyrs-retros[i])],y[runs%in%retros[i]][1:(nyrs-retros[i])],col= cols[i],lwd=2,lty=1)
         }
+        if(type[k]%in%c("BBmsy","FFmsy")) abline(h=1,lty=2)
         if(single.plots==TRUE | k==1 )  legend("topright",paste(years[nyrs-retros]),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(retros))))
       }  else {
         # Plot SP
@@ -1244,7 +1246,7 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
     }
     
     load(paste0(output.dir,"/",assessment,"_",scenarios[i],"_jabba.rdata"),verbose=T)
-    if(s==1){
+    if(i==1){
       jbs$yr = jabba$yr
       jbs$catch = jabba$catch
     }
@@ -1298,6 +1300,7 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
         for(i in 1:length(scenarios)){
           lines(years,y[runs%in%scenarios[i]],col= cols[i],lwd=2,lty=1)
         }
+        if(type[k]%in%c("BBmsy","FFmsy")) abline(h=1,lty=2)
       }  else {
         # Plot SP
         plot(years,years,type="n",ylim=c(0,max(jbs$pfunc$SP)),xlim=c(0,max(jbs$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
@@ -1333,9 +1336,10 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
         for(i in 1:length(scenarios)){
           lines(years,y[runs%in%scenarios[i]],col= cols[i],lwd=2,lty=1)
         }
+        if(type[k]%in%c("BBmsy","FFmsy")) abline(h=1,lty=2)
         if(single.plots==TRUE | k==1 )  legend("topright",paste(scenarios),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(scenarios))))
         
-s      }  else {
+      }  else {
         # Plot SP
         plot(years,years,type="n",ylim=c(0,max(jbs$pfunc$SP)),xlim=c(0,max(jbs$pfunc$SB_i)),ylab=ylabs[j],xlab=ylabs[1])
         for(i in 1:length(scenarios)){
