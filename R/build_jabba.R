@@ -47,9 +47,9 @@
 #' @export
 
 build_jabba <- function(
-  catch = iccat$bet$catch,
-  cpue = iccat$bet$cpue,
-  se =  iccat$bet$se,
+  catch = NULL,
+  cpue = NULL,
+  se =  NULL,
   assessment = "bet_example",
   scenario = "test",
   model.type = c("Schaefer","Fox","Pella","Pella_m"),

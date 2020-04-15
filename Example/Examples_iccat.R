@@ -21,7 +21,7 @@ data(iccat)
 # get BET data
 bet = iccat$bet
 # Compile JABBA JAGS model and input object
-jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "FitCPUE",model.type = "Fox",sigma.est = FALSE,fixed.obsE = 0.01)
+jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "Ref",model.type = "Fox",sigma.est = FALSE,fixed.obsE = 0.01)
 # Fit JABBA (here mostly default value - careful)
 bet1 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
 
@@ -53,17 +53,57 @@ jbplot_kobe(bet1)
 jabba_plots(jabba=bet1,output.dir = output.dir)
 
 
-# Run with projections
-jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "FitCPUE",model.type = "Fox",sigma.est = FALSE,fixed.obsE = 0.01,
-                      projection=TRUE,TACs=seq(45000,90000,5000))
+#------------------------------------------------------
+# Estimate shape m as function of Bmsy/K
+#-------------------------------------------------------
 
-betprj = fit_jabba(jbinput,output.dir=output.dir,save.csvs = T)
-# plot with CIs (80% for projections)
-jbplot_prj(betprj,type="BBmsy")
-jbplot_prj(betprj,type="BB0")
+# Compile JABBA JAGS model and input object
+jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "Est_shape",model.type = "Pella_m",BmsyK=0.37,shape.CV = 0.3,sigma.est = FALSE,fixed.obsE = 0.01)
+# Fit JABBA
+bet2 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
 
-# or without CIs (80% for projections) 
-jbplot_prj(betprj,type="FFmsy", CIs=FALSE)
+jbplot_ppdist(bet2)
+# Compare
+par(mfrow=c(2,2))
+jbplot_trj(bet1,type="BBmsy",add=T)
+jbplot_trj(bet2,type="BBmsy",add=T)
+jbplot_kobe(bet1,add=T)
+jbplot_kobe(bet2,add=T)
+
+#----------------
+# Catch-Only
+#----------------
+# Compile JABBA JAGS model and input object for Catch Only
+# Add biomass prior based on B/Bmsy guestimate
+jbinput = build_jabba(catch=bet$catch,model.type = "Fox",assessment=assessment,scenario =  "CatchOnly" ,b.prior=c(0.7,0.2,2010,"bbmsy"))
+# Fit JABBA
+bet3 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
+
+# Check depletion prior vs posterior
+jbplot_bprior(bet3)
+# Compare
+par(mfrow=c(3,2))
+jbplot_trj(bet1,type="BBmsy",add=T)
+jbplot_trj(bet1,type="FFmsy",add=T)
+jbplot_trj(bet2,type="BBmsy",add=T)
+jbplot_trj(bet2,type="FFmsy",add=T)
+jbplot_trj(bet3,type="BBmsy",add=T)
+jbplot_trj(bet3,type="FFmsy",add=T)
+
+
+#-------------------------------------------
+# Make summary plot comparing the three scenarios
+#-------------------------------------------
+Scenarios = (c("Ref","Est_shape","CatchOnly")) # Scenarios to be loaded as Rdata objects
+#  Check plot with CIs
+jbplot_summary(assessment=assessment,scenarios = Scenarios,mod.path = output.dir)
+# and without CIs
+jbplot_summary(assessment=assessment,scenarios = Scenarios,plotCIs=FALSE)
+# Check Base only
+jbplot_summary(assessment=assessment,scenarios = Scenarios[1],prefix="SmryBase",as.png = F)
+# Save comparison 
+jbplot_summary(assessment=assessment,scenarios = Scenarios,prefix="Comp5runs",save.summary = T,as.png = T,output.dir = output.dir)
+
 
 #----------------------------------------------------------------
 # Conduct Retrospective Analysis and Hind-Cast Cross-Validation
@@ -94,43 +134,20 @@ mase = jbplot_hcxval(hc,single.plots = F,as.png = TRUE,output.dir=retro.dir)
 #check stats
 mase
 
+#---------------------------
+# Run Base with projections
+#---------------------------
+jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "FitCPUE",model.type = "Fox",sigma.est = FALSE,fixed.obsE = 0.01,
+                      projection=TRUE,TACs=seq(45000,90000,5000))
 
-#------------------------------------------------------
-# Estimate shape m as function of Bmsy/K
-#-------------------------------------------------------
+betprj = fit_jabba(jbinput,output.dir=output.dir,save.csvs = T)
+# plot with CIs (80% for projections)
+jbplot_prj(betprj,type="BBmsy")
+jbplot_prj(betprj,type="BB0")
 
-# Compile JABBA JAGS model and input object
-jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "Est_shape",model.type = "Pella_m",BmsyK=0.37,shape.CV = 0.3,sigma.est = FALSE,fixed.obsE = 0.01)
-# Fit JABBA
-bet2 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
+# or without CIs (80% for projections) 
+jbplot_prj(betprj,type="FFmsy", CIs=FALSE)
 
-jbplot_ppdist(bet2)
-# Compare
-par(mfrow=c(2,2))
-jbplot_trj(bet1,type="BBmsy",add=T)
-jbplot_trj(bet2,type="BBmsy",add=T)
-jbplot_kobe(bet1,add=T)
-jbplot_kobe(bet2,add=T)
-
-#----------------
-# Catch-Only
-#----------------
-# Compile JABBA JAGS model and input object for Catch Only
-# Add biomass prior based on B/Bmsy guestimate
-jbinput = build_jabba(catch=bet$catch,model.type = "Fox",assessment=assessment,scenario =  "CatchOnly" ,b.prior=c(0.7,0.2,2010,"bbmsy"))
-# Fit JABBA
-bet3 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
-
-# Check depletion prior vs posterior
-jbplot_bprior(bet3)
-# Compare
-par(mfrow=c(2,2))
-jbplot_trj(bet1,type="BBmsy",add=T)
-jbplot_trj(bet3,type="BBmsy",add=T)
-jbplot_trj(bet1,type="FFmsy",add=T)
-jbplot_trj(bet3,type="FFmsy",add=T)
-
-jabba_plots(bet3,output.dir = output.dir)
 
 #><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>><>
 # White Marlin (Maurato et al. 2019)

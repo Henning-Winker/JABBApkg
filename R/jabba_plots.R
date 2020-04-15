@@ -1257,7 +1257,7 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
 jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotCIs=TRUE,prefix="Summary",save.summary=FALSE,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,width=NULL,height=NULL,Xlim=NULL){
   
   cat(paste0("\n","><> jbplot_compare() - requires save.jabba = TRUE in fit_jabba() <><","\n"))
-  jbs = list(assessment=assessment,yr= NULL,catch=NULL,timeseries = NULL,refpts=NULL,pfunc=NULL,diags=NULL,settings=NULL)
+  jbs = list(assessment=assessment,yr= NULL,catch=NULL,timeseries = NULL,refpts=NULL,pfunc=NULL,settings=NULL)
   
   for(i in 1:length(scenarios)){
     if(file.exists(paste0(output.dir,"/",assessment,"_",scenarios[i],"_jabba.rdata"))==FALSE){
@@ -1269,10 +1269,10 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
       jbs$yr = jabba$yr
       jbs$catch = jabba$catch
     }
-    jbs$timeseries$mu = rbind(jbs$timeseries$mu,data.frame(factor=jabba$diags[1,1],level=jabba$diags[1,2],jabba$timeseries[,"mu",])) 
-    jbs$timeseries$lci = rbind(jbs$timeseries$lci,data.frame(factor=jabba$diags[1,1],level=jabba$diags[1,2],jabba$timeseries[,"lci",])) 
-    jbs$timeseries$uci = rbind(jbs$timeseries$uci,data.frame(factor=jabba$diags[1,1],level=jabba$diags[1,2],jabba$timeseries[,"uci",])) 
-    jbs$diags = rbind(jbs$diags,jabba$diags)
+    jbs$timeseries$mu = rbind(jbs$timeseries$mu,data.frame(factor=jabba$pfunc[1,1],level=jabba$pfunc[1,2],jabba$timeseries[,"mu",])) 
+    jbs$timeseries$lci = rbind(jbs$timeseries$lci,data.frame(factor=jabba$pfunc[1,1],level=jabba$pfunc[1,2],jabba$timeseries[,"lci",])) 
+    jbs$timeseries$uci = rbind(jbs$timeseries$uci,data.frame(factor=jabba$pfunc[1,1],level=jabba$pfunc[1,2],jabba$timeseries[,"uci",])) 
+    #jbs$diags = rbind(jbs$diags,jabba$diags) #prevents Catch-Only comparison 
     jbs$refpts= rbind(jbs$refpts,jabba$refpts[1,])
     jbs$pfunc= rbind(jbs$pfunc ,jabba$pfunc)
     
