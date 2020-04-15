@@ -29,6 +29,9 @@ jbplot_retro(
 
 \item{Xlim}{allows to "zoom-in" requires speficiation Xlim=c(first.yr,last.yr)}
 }
+\value{
+Mohn's rho statistic for several quantaties
+}
 \description{
 Plots retrospective pattern of B, F, BBmsy, FFmsy, BB0 and SP #'
 }

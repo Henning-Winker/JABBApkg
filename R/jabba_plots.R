@@ -1133,6 +1133,7 @@ jabba_plots = function(jabba,output.dir = getwd(),as.png=TRUE,statusplot ="kobe"
 #' @param width plot width
 #' @param height plot hight
 #' @param Xlim  allows to "zoom-in" requires speficiation Xlim=c(first.yr,last.yr)
+#' @return Mohn's rho statistic for several quantaties
 #' @export
 jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,width=NULL,height=NULL,Xlim=NULL){
   
@@ -1146,7 +1147,9 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
   nyrs = length(years)
   cols= c(1,hc$settings$cols)
   if(is.null(Xlim)){Xlim = range(years)}
-  
+  FRP.rho = c("B","F", "Bmsy", "Fmsy", "BtoB0","MSY")  
+  rho = data.frame(mat.or.vec(length(retros)-1,length(FRP.rho)))
+  colnames(rho) = FRP.rho
   if(single.plots==TRUE){
     if(is.null(width)) width = 5
     if(is.null(height)) height = 3.5
@@ -1162,12 +1165,16 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
       
       if(type[k]%in%c("B","F","BBmsy","FFmsy","BB0")){
         y = hc$timeseries$mu[,j+2]
+        ref = hc$timeseries$mu[runs%in%retros[1],j+2]
         ylc = hc$timeseries$lci[runs%in%retros[1],j+2]
         yuc = hc$timeseries$uci[runs%in%retros[1],j+2]
         plot(years,years,type="n",ylim=c(0,max(y[years>=Xlim[1] & years<=Xlim[2]],yuc[years>=Xlim[1] & years<=Xlim[2]])),ylab=ylabs[j],xlab="Year",xlim=Xlim)
         polygon(c(years,rev(years)),c(ylc,rev(yuc)),col="grey",border="grey")
         for(i in 1:length(retros)){
           lines(years[1:(nyrs-retros[i])],y[runs%in%retros[i]][1:(nyrs-retros[i])],col= cols[i],lwd=2,lty=1)
+          if(i>1){
+          rho[i-1,k] =  (y[runs%in%retros[i]][(nyrs-retros[i])]-ref[(nyrs-retros[i])])/ref[(nyrs-retros[i])]
+          }
         }
         if(type[k]%in%c("BBmsy","FFmsy")) abline(h=1,lty=2)
       }  else {
@@ -1176,6 +1183,9 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
         for(i in 1:length(retros)){
           lines(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]],hc$pfunc$SP[hc$pfunc$level%in%retros[i]],col=cols[i],lwd=2,lty=1)
           points(mean(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]][hc$pfunc$SP[hc$pfunc$level%in%retros[i]]==max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]])]),max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]]),col=cols[i],pch=16,cex=1.2)
+          if(i>1){
+            rho[i-1,6] =  (hc$refpts$msy[hc$refpts$level==retros[i]]-hc$refpts$msy[hc$refpts$level==retros[1]])/hc$refpts$msy[hc$refpts$level==retros[1]]
+          }
         }}
       if(single.plots==TRUE | k==1 )  legend("topright",paste(years[nyrs-retros]),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(retros))))
       if(as.png==TRUE) dev.off()
@@ -1200,6 +1210,9 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
         polygon(c(years,rev(years)),c(ylc,rev(yuc)),col="grey",border="grey")
         for(i in 1:length(retros)){
           lines(years[1:(nyrs-retros[i])],y[runs%in%retros[i]][1:(nyrs-retros[i])],col= cols[i],lwd=2,lty=1)
+          if(i>1){
+            rho[i-1,k] =  (y[runs%in%retros[i]][(nyrs-retros[i])]-ref[(nyrs-retros[i])])/ref[(nyrs-retros[i])]
+          }
         }
         if(type[k]%in%c("BBmsy","FFmsy")) abline(h=1,lty=2)
         if(single.plots==TRUE | k==1 )  legend("topright",paste(years[nyrs-retros]),col=cols,bty="n",cex=0.7,pt.cex=0.7,lwd=c(2,rep(1,length(retros))))
@@ -1209,13 +1222,18 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
         for(i in 1:length(retros)){
           lines(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]],hc$pfunc$SP[hc$pfunc$level%in%retros[i]],col=cols[i],lwd=2,lty=1)
           points(mean(hc$pfunc$SB_i[hc$pfunc$level%in%retros[i]][hc$pfunc$SP[hc$pfunc$level%in%retros[i]]==max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]])]),max(hc$pfunc$SP[hc$pfunc$level%in%retros[i]]),col=cols[i],pch=16,cex=1.2)
-        }}
+          if(i>1){
+            rho[i-1,6] =  (hc$refpts$msy[hc$refpts$level==retros[i]]-hc$refpts$msy[hc$refpts$level==retros[1]])/hc$refpts$msy[hc$refpts$level==retros[1]]
+          }      
+          }}
       
       
     }
     if(as.png==TRUE) dev.off()
   }
-  
+  rho = rbind(rho,apply(rho,2,mean))
+  rownames(rho) = c(rev(years)[retros[-1]],"rho.mu")
+  return(rho)
 } # end of Retrospective Plot
 
 
