@@ -219,5 +219,31 @@ swos = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
 # Plot all
 jabba_plots(jabba=swos,output.dir = output.dir)
 
+# Organize folders by creating a "retro" subfolder
+retro.dir = file.path(output.dir,"retro")
+dir.create(retro.dir,showWarnings = F)
+
+# Run hindcasts
+hc = jabba_hindcast(jbinput,save.hc=T,plotall=T,output.dir = retro.dir,peels = 0:7)
+
+# Retro Analysis Summary plot
+jbplot_retro(hc,as.png = F,single.plots = F,output.dir = retro.dir)
+# Save plot and note Mohn's rho statistic
+mohnsrho = jbplot_retro(hc,as.png = T,single.plots = F,output.dir = retro.dir)
+# Zoom-in
+mohnsrho = jbplot_retro(hc,as.png = F,single.plots = F,output.dir = retro.dir,Xlim=c(2000,2014))
+# eval mohnsrho
+mohnsrho
+
+# Do Hindcast Cross-Validation (hcxval) 
+# show multiplot
+jbplot_hcxval(hc,single.plots = F,as.png = F,output.dir=retro.dir)
+# Zoom-in
+jbplot_hcxval(hc,single.plots = F,as.png = F,output.dir=retro.dir,minyr=2007)
+# save as png and note summary stats 
+mase = jbplot_hcxval(hc,single.plots = F,as.png = TRUE,output.dir=retro.dir)
+#check stats
+mase
+
 
 

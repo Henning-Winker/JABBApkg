@@ -1395,7 +1395,7 @@ jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE
   d. = hc$diags
   peels = unique(d.$retro.peels)
   styr = max(d.$year)-max(peels)
-  years = unique(d.$year)
+  years = sort(unique(d.$year))
   endyrvec = sort(years[length(years)-peels])
   if(is.null(minyr)==TRUE){
     xmin = length(years)-max(peels)
