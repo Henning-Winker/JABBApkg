@@ -1204,6 +1204,7 @@ jbplot_retro <- function(hc,output.dir=getwd(),as.png=FALSE,single.plots=FALSE,w
       
       if(type[k]%in%c("B","F","BBmsy","FFmsy","BB0")){
         y = hc$timeseries$mu[,j+2]
+        ref = hc$timeseries$mu[runs%in%retros[1],j+2]
         ylc = hc$timeseries$lci[runs%in%retros[1],j+2]
         yuc = hc$timeseries$uci[runs%in%retros[1],j+2]
         plot(years,years,type="n",ylim=c(0,max(y[years>=Xlim[1] & years<=Xlim[2]],yuc[years>=Xlim[1] & years<=Xlim[2]])),ylab=ylabs[j],xlab="Year",xlim=Xlim)
