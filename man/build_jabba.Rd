@@ -5,9 +5,9 @@
 \title{Creates a data list used as input to JAGS}
 \usage{
 build_jabba(
-  catch = iccat$bet$catch,
-  cpue = iccat$bet$cpue,
-  se = iccat$bet$se,
+  catch = NULL,
+  cpue = NULL,
+  se = NULL,
   assessment = "bet_example",
   scenario = "test",
   model.type = c("Schaefer", "Fox", "Pella", "Pella_m"),
