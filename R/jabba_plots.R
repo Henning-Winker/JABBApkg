@@ -1354,3 +1354,125 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
   }
 } # end of Summary Plot
 
+
+#' jbplot_hcxval
+#' 
+#' Plots and summarizes results from one step head hindcast cross-validation using the output form jabba_hindcast 
+#'
+#' @param hc output ojejct from jabba_hindcast
+#' @param output.dir directory to save plots
+#' @param as.png save as png file of TRUE
+#' @param single.plots if TRUE plot invidual fits else make multiplot
+#' @param add if TRUE plots par is only called for first plot
+#' @param width plot width
+#' @param height plot hight
+#' @return hcxval statistics by index: MASE, MAE.PR predition residuals,MAE.base for random walk, n.eval obs evaluated 
+#' @export
+jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE,add=FALSE,width=NULL,height=NULL){
+  
+  MASE = NULL
+  cols = hc$settings$cols
+  d. = hc$diags
+  peels = unique(d.$retro.peels)
+  styr = max(d.$year)-max(peels)
+  years = unique(d.$year)
+  endyrvec = sort(years[length(years)-peels])
+  cat("><> Only including indices that have years overlapping hind-cast horizan")
+  # check in index
+  indices = unique(d.$name)
+  valid = NULL
+  for(i in 1:length(indices)){
+    if(nrow(d.[d.$name%in%indices[i] & d.$year>styr & d.$retro.peels%in%peels[1],])>1){ # Only run if overlap
+      valid=c(valid,paste(indices[i]))}
+  }
+  cat("><> Including indices:",valid)
+  
+  n.indices = length(valid)  
+  if(single.plots==FALSE){  
+    Par = list(mfrow=c(round(n.indices/2+0.01,0),ifelse(n.indices==1,1,2)),mai=c(0.35,0.15,0,.15),omi = c(0.2,0.25,0.2,0) + 0.1,mgp=c(2,0.5,0), tck = -0.02,cex=0.8)
+    if(as.png==TRUE){png(file = paste0(output.dir,"/hcxaval_",hc$scenario,".png"), width = 7, height = ifelse(n.indices==1,5,ifelse(n.indices==2,3.,2.5))*round(n.indices/2+0.01,0),
+                         res = 200, units = "in")}
+    par(Par)
+  }  
+  for(i in 1:length(indices)){
+    if(nrow(d.[d.$name%in%indices[i] & d.$year>styr & d.$retro.peels%in%peels[1],])>1){ # Only run if overlap
+      if(single.plots==TRUE){  
+        if(is.null(width)) width = 5
+        if(is.null(height)) height = 3.5
+        
+        Par = list(mfrow=c(1,1),mar = c(3.5, 3.5, 0.5, 0.1), mgp =c(2.,0.5,0), tck = -0.02,cex=0.8)
+        if(as.png==TRUE){png(file = paste0(output.dir,"/hcxval_",hc$scenario,"_",indices[i],".png"), width = width, height = height,
+                             res = 200, units = "in")}
+        if(as.png==TRUE | indices[i]==valid[1]) par(Par)
+      }
+      xv = d.[d.$name%in%indices[i],]
+      yr = unique(xv$year)
+      yr.eval <- endyrvec
+      yr.eval <- (sort(yr.eval))
+      obs.eval <- rep(NA,length(yr.eval))
+      obs.eval[yr.eval%in%yr] = xv$obs[xv$retro.peels==min(xv$retro.peels)][yr%in%yr.eval]
+      nhc = length(endyrvec)-1
+      naive.eval = log(obs.eval[1:nhc])-log(obs.eval[2:(nhc+1)]) # add log for v1.1   
+      npe <- length(naive.eval[is.na(naive.eval)==F])  # number of prection errors
+      scaler = mean(abs(naive.eval[is.na(naive.eval)==F]))
+      py = xv$year[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
+      obs =xv$obs[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
+      hat = xv$hat[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
+      lc = xv$hat.lci[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
+      uc = xv$hat.uci[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
+      plot(0, type = "n", xlim = c(max(min(yr),min(endyrvec-5)),min(c(max(yr),max(endyrvec)))), yaxs = "i", 
+           ylim = c(ifelse(min(c(lc,obs))*0.5<0.5,0,min(c(lc,obs))*0.5),max(c(uc,obs)*1.25)), xlab = "Year", ylab = "Index")
+      
+      polygon(c(py,rev(py)),c(lc,rev(uc)),col=grey(0.5,0.4),border=grey(0.5,0.4))
+      polygon(c(py[py<=min(endyrvec)],rev(py[py<=min(endyrvec)])),c(lc[py<=min(endyrvec)],rev(uc[py<=min(endyrvec)])),col=grey(0.4,0.4),border=grey(0.4,0.4))
+      
+      #lines(py,obs,pch=21,lty=2,col="white")
+      points(py,obs,pch=21,cex=1.6,bg="white")
+      lines(py,hat,col=1,lwd=2,lty=1,type="l",pch=16)
+      
+      pred.resid = NULL
+      for(j in 1:(length(peels)-1)){
+        if(is.na(naive.eval[peels[length(peels)-peels[j]]])==FALSE){
+          
+          
+          x <- min(py):max(yr.eval)
+          x <- x[1:(length(x)-peels[j])]
+          y <- xv[xv$retro.peels==peels[j+1] & xv$year%in%x,]$hat
+          pred.resid = c(pred.resid,log(y[length(x)])-log(obs[length(x)])) # add log() for v1.1
+          lines(x, y, lwd=2,
+                lty=1, col=cols[j], type="l",cex=0.9)
+          
+          lines(x[(length(x)-1):(length(x))], y[(length(x)-1):(length(x))], lwd=2,
+                col=1,lty=2)
+          
+          points(x[length(x)], y[length(y)],pch=21,
+                 bg=cols[j],col=1, type="p",cex=1)
+          
+        }}
+      points(yr.eval[-1][1:(nhc)][is.na(naive.eval)==F],obs.eval[-1][1:(nhc)][is.na(naive.eval)==F],pch=21,cex=1.6,bg=(rev(hc$settings$cols[1:(length(peels)-1)]))[is.na(naive.eval)==F])
+      
+      
+      maepr =  mean(abs(pred.resid))
+      mase=maepr/scaler
+      MASE.i = NULL
+      MASE.i = data.frame(Index=unique(xv$name)[1], MASE=mase,MAE.PR=maepr,MAE.base=scaler,n.eval=npe)
+      legend("top",paste0(unique(xv$name)[1], ": MASE = ",round(mase,2)),bty="n",y.intersp=-0.2,cex=1.1)
+      if(single.plots==TRUE & as.png==TRUE) dev.off()
+      
+    } else{
+      cat(paste0("\n","No observations in evaluation years to compute prediction residuals for Index ",xv$name[1]),"\n")
+      MASE.i = NULL
+      MASE.i = data.frame(Index=unique(xv$name)[1], MASE=NA,MAE.PR=NA,MAE.base=NA,n.eval=0)  
+    }
+    MASE = rbind(MASE,MASE.i)
+    
+  } # end of index loop
+  if(single.plots==FALSE){
+    mtext(paste("Year"), side=1, outer=TRUE, at=0.5,line=1,cex=1.)
+    mtext(paste("Index"), side=2, outer=TRUE, at=0.5,line=1,cex=1)  
+  }
+  if(single.plots==FALSE & as.png==TRUE) dev.off()
+  
+  return(MASE)
+}
+# End of jbplot_hcxval
