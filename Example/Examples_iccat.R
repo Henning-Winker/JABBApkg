@@ -65,12 +65,42 @@ jbplot_prj(betprj,type="BB0")
 # or without CIs (80% for projections) 
 jbplot_prj(betprj,type="FFmsy", CIs=FALSE)
 
+#----------------------------------------------------------------
+# Conduct Retrospective Analysis and Hind-Cast Cross-Validation
+#----------------------------------------------------------------
+# Organize folders by creating a "retro" subfolder
+retro.dir = file.path(output.dir,"retro")
+dir.create(retro.dir,showWarnings = F)
+
+# Run hindcasts
+hc = jabba_hindcast(jbinput,save.hc=T,plotall=T,output.dir = retro.dir,peels = 0:7)
+
+# Retro Analysis Summary plot
+jbplot_retro(hc,as.png = F,single.plots = F,output.dir = retro.dir)
+# Save plot and note Mohn's rho statistic
+mohnsrho = jbplot_retro(hc,as.png = T,single.plots = F,output.dir = retro.dir)
+# Zoom-in
+mohnsrho = jbplot_retro(hc,as.png = F,single.plots = F,output.dir = retro.dir,Xlim=c(2000,2014))
+# eval mohnsrho
+mohnsrho
+
+# Do Hindcast Cross-Validation (hcxval) 
+# show multiplot
+jbplot_hcxval(hc,single.plots = F,as.png = F,output.dir=retro.dir)
+# Zoom-in
+jbplot_hcxval(hc,single.plots = F,as.png = F,output.dir=retro.dir,minyr=2000)
+# save as png and note summary stats 
+mase = jbplot_hcxval(hc,single.plots = F,as.png = TRUE,output.dir=retro.dir)
+#check stats
+mase
+
+
 #------------------------------------------------------
 # Estimate shape m as function of Bmsy/K
 #-------------------------------------------------------
 
 # Compile JABBA JAGS model and input object
-jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "Fit_shape",model.type = "Pella_m",BmsyK=0.37,shape.CV = 0.3,sigma.est = FALSE,fixed.obsE = 0.01)
+jbinput = build_jabba(catch=bet$catch,cpue=bet$cpue,se=bet$se,assessment=assessment,scenario = "Est_shape",model.type = "Pella_m",BmsyK=0.37,shape.CV = 0.3,sigma.est = FALSE,fixed.obsE = 0.01)
 # Fit JABBA
 bet2 = fit_jabba(jbinput,save.jabba=TRUE,output.dir=output.dir)
 

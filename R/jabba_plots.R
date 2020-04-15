@@ -1385,9 +1385,10 @@ jbplot_summary <- function(scenarios=NULL,assessment=NULL,mod.path=getwd(),plotC
 #' @param add if TRUE plots par is only called for first plot
 #' @param width plot width
 #' @param height plot hight
+#' @param minyr minimum year shown in plot 
 #' @return hcxval statistics by index: MASE, MAE.PR predition residuals,MAE.base for random walk, n.eval obs evaluated 
 #' @export
-jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE,add=FALSE,width=NULL,height=NULL){
+jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE,add=FALSE,width=NULL,height=NULL,minyr=NULL){
   
   MASE = NULL
   cols = hc$settings$cols
@@ -1396,6 +1397,11 @@ jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE
   styr = max(d.$year)-max(peels)
   years = unique(d.$year)
   endyrvec = sort(years[length(years)-peels])
+  if(is.null(minyr)==TRUE){
+    xmin = length(years)-max(peels)
+  } else {
+    xmin = length(years)-max(which(years%in%minyr),1,na.rm=T)+1-max(peels)
+  }
   cat("\n","><> Only including indices that have years overlapping hind-cast horizan","\n")
   # check in index
   indices = unique(d.$name)
@@ -1434,12 +1440,12 @@ jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE
       naive.eval = log(obs.eval[1:nhc])-log(obs.eval[2:(nhc+1)]) # add log for v1.1   
       npe <- length(naive.eval[is.na(naive.eval)==F])  # number of prection errors
       scaler = mean(abs(naive.eval[is.na(naive.eval)==F]))
-      py = xv$year[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
-      obs =xv$obs[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
-      hat = xv$hat[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
-      lc = xv$hat.lci[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
-      uc = xv$hat.uci[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-6]
-      plot(0, type = "n", xlim = c(max(min(yr),min(endyrvec-5)),min(c(max(yr),max(endyrvec)))), yaxs = "i", 
+      py = xv$year[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-xmin]
+      obs =xv$obs[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-xmin]
+      hat = xv$hat[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-xmin]
+      lc = xv$hat.lci[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-xmin]
+      uc = xv$hat.uci[xv$retro.peels==min(xv$retro.peels) & xv$year>styr-xmin]
+      plot(0, type = "n", xlim = c(max(min(yr),min(endyrvec-xmin+1)),min(c(max(yr),max(endyrvec)))), yaxs = "i", 
            ylim = c(ifelse(min(c(lc,obs))*0.5<0.5,0,min(c(lc,obs))*0.5),max(c(uc,obs)*1.25)), xlab = "Year", ylab = "Index")
       
       polygon(c(py,rev(py)),c(lc,rev(uc)),col=grey(0.5,0.4),border=grey(0.5,0.4))
@@ -1479,7 +1485,8 @@ jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE
       if(single.plots==TRUE & as.png==TRUE) dev.off()
       
     } else{
-      cat(paste0("\n","No observations in evaluation years to compute prediction residuals for Index ",xv$name[1]),"\n")
+      xv = d.[d.$name%in%indices[i],]
+      cat(paste0("\n","No observations in evaluation years to compute prediction residuals for Index ",xv $name[1]),"\n")
       MASE.i = NULL
       MASE.i = data.frame(Index=unique(xv$name)[1], MASE=NA,MAE.PR=NA,MAE.base=NA,n.eval=0)  
     }

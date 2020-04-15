@@ -11,7 +11,8 @@ jbplot_hcxval(
   single.plots = FALSE,
   add = FALSE,
   width = NULL,
-  height = NULL
+  height = NULL,
+  minyr = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ jbplot_hcxval(
 \item{width}{plot width}
 
 \item{height}{plot hight}
+
+\item{minyr}{minimum year shown in plot}
 }
 \value{
 hcxval statistics by index: MASE, MAE.PR predition residuals,MAE.base for random walk, n.eval obs evaluated
