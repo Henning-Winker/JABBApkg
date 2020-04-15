@@ -1377,7 +1377,7 @@ jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE
   styr = max(d.$year)-max(peels)
   years = unique(d.$year)
   endyrvec = sort(years[length(years)-peels])
-  cat("><> Only including indices that have years overlapping hind-cast horizan")
+  cat("\n","><> Only including indices that have years overlapping hind-cast horizan","\n")
   # check in index
   indices = unique(d.$name)
   valid = NULL
@@ -1385,7 +1385,7 @@ jbplot_hcxval <- function(hc, output.dir=getwd(),as.png=FALSE,single.plots=FALSE
     if(nrow(d.[d.$name%in%indices[i] & d.$year>styr & d.$retro.peels%in%peels[1],])>1){ # Only run if overlap
       valid=c(valid,paste(indices[i]))}
   }
-  cat("><> Including indices:",valid)
+  cat("\n","><> Including indices:",valid,"\n")
   
   n.indices = length(valid)  
   if(single.plots==FALSE){  
