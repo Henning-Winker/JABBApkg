@@ -19,7 +19,8 @@ fit_jabba(
   save.jabba = FALSE,
   save.csvs = FALSE,
   save.prjkobe = FALSE,
-  output.dir = getwd()
+  output.dir = getwd(),
+  silent = FALSE
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ Initial values}
 \item{save.jabba}{= FALSE}
 
 \item{output.dir}{path to save plot. default is getwd()}
+
+\item{silent}{option mute messages}
 }
 \value{
 A result list containing estimates of model input, settings and results

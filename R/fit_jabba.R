@@ -16,6 +16,7 @@
 #' @param save.jabba = FALSE
 #' @param save.all = FALSE
 #' @param output.dir path to save plot. default is getwd()
+#' @param silent option mute messages 
 #' @return A result list containing estimates of model input, settings and results
 #' @export
 #' @examples
@@ -38,7 +39,8 @@ fit_jabba = function(jbinput,
                      save.jabba = FALSE,
                      save.csvs = FALSE,
                      save.prjkobe = FALSE,
-                     output.dir = getwd()
+                     output.dir = getwd(),
+                     silent = FALSE
 ){
   #write jabba model
   jabba2jags(jbinput)
@@ -99,7 +101,7 @@ fit_jabba = function(jbinput,
 
   # if run with library(rjags)
   posteriors = mod$BUGSoutput$sims.list
-  cat(paste0("\n","><> Produce results output of ",settings$model.type," model for ",settings$assessment," ",settings$scenario," <><","\n"))
+  if(!silent) cat(paste0("\n","><> Produce results output of ",settings$model.type," model for ",settings$assessment," ",settings$scenario," <><","\n"))
 
   #-----------------------------------------------------------
   # <><<><<><<><<><<><<>< Outputs ><>><>><>><>><>><>><>><>><>
@@ -178,7 +180,7 @@ fit_jabba = function(jbinput,
   #-------------------------------------------------------
   
   if(jbinput$settings$projection==TRUE){
-    cat("\n","><> compiling Future Projections under fixed quota <><","\n")
+    if(!silent) cat("\n","><> compiling Future Projections under fixed quota <><","\n")
     pyrs = jbinput$jagsdata$pyrs
     TACs = jbinput$jagsdata$TAC[1,] 
     nTAC = length(TACs) 
@@ -298,7 +300,7 @@ fit_jabba = function(jbinput,
   sel.par = c(1,2,7,4,3,5)
   out=data.frame(posteriors[params[sel.par]])
 
-  cat(paste0("\n","\n",paste0("><> Scenario ", jbinput$settings$scenario,"_",jbinput$settings$model.type," completed in ",as.integer(save.time[3]/60)," min and ",round((save.time[3]/60-as.integer(save.time[3]/60))*100)," sec <><","\n")))
+  if(!silent) cat(paste0("\n","\n",paste0("><> Scenario ", jbinput$settings$scenario,"_",jbinput$settings$model.type," completed in ",as.integer(save.time[3]/60)," min and ",round((save.time[3]/60-as.integer(save.time[3]/60))*100)," sec <><","\n")))
 
 
 

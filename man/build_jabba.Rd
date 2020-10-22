@@ -44,7 +44,8 @@ build_jabba(
   KOBE.type = c("ICCAT", "IOTC")[2],
   Biplot = FALSE,
   harvest.label = c("Hmsy", "Fmsy")[2],
-  catch.metric = "(t)"
+  catch.metric = "(t)",
+  silent = FALSE
 )
 }
 \arguments{
@@ -123,6 +124,8 @@ VARIANCE options}
 \item{harvest.label}{= c("Hmsy","Fmsy")[2], # choose label preference H/Hmsy versus Fmsy}
 
 \item{catch.metric}{"(t)" # Define catch input metric e.g. (tons) "000 t"}
+
+\item{silent}{option to mute messages}
 
 \item{q_bounds=}{c(10^-30,1000), # Defines lower and upper bounds for q}
 

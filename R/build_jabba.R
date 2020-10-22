@@ -43,6 +43,7 @@
 #' @param Biplot= FALSE, # Produces a "post-modern" biplot with buffer and target zones (Quinn & Collie 2005)
 #' @param harvest.label = c("Hmsy","Fmsy")[2], # choose label preference H/Hmsy versus Fmsy
 #' @param catch.metric  "(t)" # Define catch input metric e.g. (tons) "000 t" 
+#' @param silent option to mute messages 
 #' @return List to be used as data input to JABBA JAGS model.
 #' @export
 
@@ -88,8 +89,9 @@ build_jabba <- function(
   KOBE.type = c("ICCAT","IOTC")[2], # ICCAT uses 3 colors; IOTC 4 (incl. orange)
   Biplot= FALSE, # Produces a "post-modern" biplot with buffer and target zones (Quinn & Collie 2005)
   harvest.label = c("Hmsy","Fmsy")[2], # choose label preference H/Hmsy versus Fmsy
-  catch.metric = "(t)" # Define catch input metric e.g. (tons) "000 t" etc
-){
+  catch.metric = "(t)", # Define catch input metric e.g. (tons) "000 t" etc
+  silent = FALSE
+  ){
 
 
   # define model typue
@@ -101,7 +103,7 @@ build_jabba <- function(
   #-------------------------
   # Prepare input data
   #-------------------------
-  cat("\n","><> Prepare JABBA input data <><","\n","\n")
+  if(!silent) cat("\n","><> Prepare JABBA input data <><","\n","\n")
 
 
   if(is.null(catch)) stop("\n","\n","><> Catch Time series not provided <><","\n","\n")
@@ -114,7 +116,7 @@ build_jabba <- function(
   if(is.null(se)) SE.I = FALSE
   if(is.null(cpue)){
     CatchOnly = TRUE
-    cat(paste0("\n","><> Running Catch-Only mode: CatchOnly = TRUE <><","\n","\n"))
+    if(!silent)cat(paste0("\n","><> Running Catch-Only mode: CatchOnly = TRUE <><","\n","\n"))
     cpue= catch[,1:2]
     colnames(cpue) = c("Year","Dummy Index")
     cpue[,2] = NA
@@ -138,7 +140,7 @@ build_jabba <- function(
   conv.catch = as.numeric(rbind(matrix(rep(NA,(styr.C-1)*n.catches),styr.C-1,n.catches),as.matrix(catch[,-1])))
 
   if(length(which(conv.catch<0.0001)>0)) {
-    cat(paste0("\n","><> Warnning: Replacing 0 Catch by small constant 0.0001 <><","\n","\n"))
+    if(!silent) cat(paste0("\n","><> Warnning: Replacing 0 Catch by small constant 0.0001 <><","\n","\n"))
     conv.catch[conv.catch< 0.001]=0
   }
   if(length(which(is.na(conv.catch)))>0) stop("\n","\n","><> Missing Catch values currently not permitted (NAs should be 0) <><","\n","\n")
@@ -146,7 +148,7 @@ build_jabba <- function(
   # Build Catch input
   Catch=matrix(conv.catch,nrow=n.years,ncol=n.catches)
   if(ncol(Catch)>1){
-    cat(paste0("\n","><> Aggrigating multiple catch colums (assumed by fleet) to a single total catch column <><","\n","\n"))
+    if(!silent) cat(paste0("\n","><> Aggrigating multiple catch colums (assumed by fleet) to a single total catch column <><","\n","\n"))
     Catch = apply(Catch,1,sum)
   }
   TC = as.numeric(Catch) # Total Catch
@@ -154,9 +156,9 @@ build_jabba <- function(
   # Catch CV option.
   if(add.catch.CV==TRUE){
     if(length(catch.cv)>1) {CV.C =catch.cv[,2]} else {CV.C = rep(catch.cv,length(TC))}
-    cat("\n","><> Assume Catch with error CV = ",mean(CV.C)," <><","\n","\n")
+    if(!silent) cat("\n","><> Assume Catch with error CV = ",mean(CV.C)," <><","\n","\n")
   } else {
-    cat("\n","><> Assume Catch to be known without error <><","\n","\n")
+    if(!silent) cat("\n","><> Assume Catch to be known without error <><","\n","\n")
   }
 
 
@@ -173,7 +175,7 @@ build_jabba <- function(
   # Build Standard Error matrix
   if(is.null(se)){SE.I=FALSE} else {SE.I=TRUE}
   if(SE.I==FALSE){
-    cat("\n","><> SE.I=FALSE: Creatinng SE dummy matrix <><","\n","\n")
+    if(!silent) cat("\n","><> SE.I=FALSE: Creatinng SE dummy matrix <><","\n","\n")
     se = cpue
     conv.se = as.numeric(rbind(matrix(rep(NA,(styr.I-1)*n.indices),styr.I-1,n.indices),as.matrix(cpue[,-1])))
     se2 = matrix(ifelse(fixed.obsE>0,fixed.obsE^2,10^-10),n.years,n.indices)#/2
@@ -303,7 +305,7 @@ build_jabba <- function(
   Priors = data.frame(Priors)
   Priors$log.sd = sqrt(log(Priors[,2]^2+1))
 
-  
+  if(!silent){
   cat("\n","><> Model type:",model.type," <><","\n")
   if(model<4){cat("\n","><> Shape m =",m ,"\n")} else {cat("\n","><> Shape m is estmated with a mean",m,"and a CV",shape.CV,"\n")}
   cat("\n","><> K prior mean =",K.pr[1],"and CV =", CV.K,"(log.sd = ",K.pr[2],")","\n")
@@ -316,6 +318,7 @@ build_jabba <- function(
   # Set up JABBA
   #----------------------------------------------------------
   cat("\n","\n","\n","><> ALWAYS ENSURE to adjust default settings to your specific stock <><","\n","\n")
+  }
   # Plot MSY
   # remove scientific numbers
   options(scipen=999)
